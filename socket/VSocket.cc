@@ -80,6 +80,7 @@ void VSocket::Close(){
   *
  **/
 int VSocket::MakeConnection( const char * hostip, int port ) {
+   
    int st;
 
    if ( -1 == st ) {
