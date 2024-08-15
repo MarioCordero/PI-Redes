@@ -33,7 +33,8 @@
 /**
   *  Class initializer
   *     use Unix socket system call
-  *
+  *     Creates an initializes a socket in a network
+  * 
   *  @param     char t: socket type to define
   *     's' for stream
   *     'd' for datagram
@@ -41,7 +42,36 @@
   *
  **/
 void VSocket::CreateVSocket( char t, bool IPv6 ){
+    //Socket( char, bool = false );
+    //int socket(int domain, int type, int protocol);
 
+	//First the domain
+    int domain = AF_INET; //IPv4 Internet protocols
+    if(IPv6){
+        domain = AF_INET6; //IPv6 Internet protocols
+    }
+
+	//Then the type
+    int type = -1;
+    if(t=='s'){             //stream
+        type = SOCK_STREAM;
+    }else if(t=='d'){       //datagram
+        type = SOCK_DGRAM;
+    }
+
+	//Last the protocol
+    int protocol = 0;
+
+	//Now, create the socket using the linux library
+	this->idSocket = socket(domain, type, 0);
+    if (this->idSocket == -1) {
+        perror("Error!!!!");
+    }
+}
+
+//Creates just a socketID
+void VSocket::CreateVSocket( int port ){
+	this->idSocket = port;
 }
 
 

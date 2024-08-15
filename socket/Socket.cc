@@ -9,12 +9,13 @@
   *
  **/
 
-#include <stdio.h>	// for perror
-#include <stdlib.h>	// for exit
-#include <string.h>	// for memset
+#include <stdio.h>	   // for perror
+#include <stdlib.h>	   // for exit
+#include <string.h>	   // for memset
 #include <arpa/inet.h>	// for inet_pton
-#include <sys/types.h>	// for connect 
-#include <sys/socket.h>
+#include <sys/types.h>	// for connect
+
+#include <sys/socket.h> // This .h is a library on linux
 
 #include "Socket.h"
 
@@ -116,4 +117,3 @@ size_t Socket::Write( const char *text ) {
    return st;
 
 }
-
