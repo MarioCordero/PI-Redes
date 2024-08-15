@@ -23,7 +23,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>			// ntohs
 #include <unistd.h>			// close
-//#include <sys/types.h>
+#include <sys/types.h>
 #include <arpa/inet.h>
 #include <netdb.h>			// getaddrinfo, freeaddrinfo
 
@@ -42,7 +42,7 @@
   *
  **/
 void VSocket::CreateVSocket( char t, bool IPv6 ){
-    //Socket( char, bool = false );
+	//The structure of the Unix socket syscall 
     //int socket(int domain, int type, int protocol);
 
 	//First the domain
@@ -64,6 +64,8 @@ void VSocket::CreateVSocket( char t, bool IPv6 ){
 
 	//Now, create the socket using the linux library
 	this->idSocket = socket(domain, type, 0);
+
+	//Check if there's an error
     if (this->idSocket == -1) {
         perror("Error!!!!");
     }
@@ -91,13 +93,11 @@ VSocket::~VSocket() {
   *    use Unix close system call (once opened a socket is managed like a file in Unix)
   *
  **/
-void VSocket::Close(){
-   int st;
-
-   if ( -1 == st ) {
-      throw std::runtime_error( "Socket::Close()" );
-   }
-
+void VSocket::Close() {
+    //Try to close the socket
+    if (close(this->idSocket) == -1) {
+        throw std::runtime_error("Error closing socket in Socket::Close()");
+    }
 }
 
 
@@ -110,7 +110,10 @@ void VSocket::Close(){
   *
  **/
 int VSocket::MakeConnection( const char * hostip, int port ) {
-   
+
+	//The structure of the connect Unix syscall 
+	//int connect(int sockfd, const struct sockaddr *addr,socklen_t addrlen);
+	//sockfd = sockID
    int st;
 
    if ( -1 == st ) {
