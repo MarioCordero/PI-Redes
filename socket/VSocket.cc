@@ -19,6 +19,7 @@
 #include <stdexcept>
 #include <cstdio>
 #include <cstring>			// memset
+#include <iostream>
 
 #include <sys/socket.h>
 #include <arpa/inet.h>			// ntohs
@@ -63,11 +64,11 @@ void VSocket::CreateVSocket( char t, bool IPv6 ){
     int protocol = 0;
 
 	//Now, create the socket using the linux library
-	this->idSocket = socket(domain, type, 0);
+	this->idSocket = socket(domain, type, protocol);
 
 	//Check if there's an error
     if (this->idSocket == -1) {
-        perror("Error!!!!");
+        throw(std::runtime_error("Problem Crating Vsocket..."));
     }
 }
 
@@ -114,14 +115,40 @@ int VSocket::MakeConnection( const char * hostip, int port ) {
 	//The structure of the connect Unix syscall 
 	//int connect(int sockfd, const struct sockaddr *addr,socklen_t addrlen);
 	//sockfd = sockID
-   int st;
+    try{
+        
+        int st;
 
-   if ( -1 == st ) {
-      perror( "VSocket::MakeConnection" );
-      throw std::runtime_error( "VSocket::MakeConnection" );
-   }
+        //Define an addres for the host
+        struct sockaddr_in host4;
 
-   return st;
+        //TF is this?
+        memset( (char *) &host4, 0, sizeof( host4 ) );
 
+        host4.sin_family = AF_INET;
+
+        //This works jus to prove if we can stablish a connection with AF_INET and the port given
+        st = inet_pton( AF_INET, hostip, &host4.sin_addr );
+
+        if ( -1 == st ) {
+            throw(std::runtime_error( "VSocket::DoConnect, inet_pton" ));
+        }
+
+        //TF is this?
+        host4.sin_port = htons( port );
+
+        //Try the connection
+        st = connect( idSocket, (sockaddr *) &host4, sizeof( host4 ) );
+
+        if ( -1 == st ) {
+            throw(std::runtime_error( "VSocket::DoConnect, connect" ));
+        }
+
+        return st;
+
+    }catch(const std::exception& e){
+
+        std::cerr << '\n' << e.what() << '\n';
+
+    }
 }
-

@@ -5,16 +5,15 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <iostream>
 
 #include "VSocket.h"
 #include "Socket.h"
 
 int main( int argc, char * argv[] ) {
    const char * os = "http://os.ecci.ucr.ac.cr/";
-   const char * osi = "10.1.104.187";
-   const char * ose = "163.178.104.187";
-   const char * request = "GET /lego/ HTTP/1.1\n\rhost: redes.ecci\n\r\n\r";
+   const char * osi = "10.84.166.62";
+   const char * ose = "163.178.104.62";
+   const char * request = "GET /pirofs/index.php?disk=Disk-01&cmd=ls HTTP/1.1\r\nhost: redes.ecci\r\n\r\n";
 
    VSocket * s;	
    char a[512];
@@ -23,7 +22,7 @@ int main( int argc, char * argv[] ) {
 
    s->Connect( osi, 80 );  //Connects the socket to the server using the "osi" IP in the port 80, HTTP standart port
 
-   s->Write(  request );   //Sends a request to the server
+   s->Write(request);      //Sends a request to the server
 
    s->Read( a, 512 );      //Gets the response of the server and store it on buffer "a" (512 bytes)
 

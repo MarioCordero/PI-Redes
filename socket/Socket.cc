@@ -14,6 +14,7 @@
 #include <string.h>	   // for memset
 #include <arpa/inet.h>	// for inet_pton
 #include <sys/types.h>	// for connect
+#include <unistd.h>     //
 
 #include <sys/socket.h> // This .h is a library on linux
 
@@ -70,8 +71,12 @@ int Socket::Connect( const char * host, int port ) {
 size_t Socket::Read( const void * text, size_t size ) {
    int st = -1;
 
+   ssize_t hola = read( this->idSocket , const_cast<void*>(text) , size);
+
+   st = hola;
+
    if ( -1 == st ) {
-//      throw std::runtime_error( "Socket::Read( const void *, size_t )" );
+      //throw std::runtime_error( "Socket::Read( const void *, size_t )" );
    }
 
    return st;
@@ -89,6 +94,10 @@ size_t Socket::Read( const void * text, size_t size ) {
  **/
 size_t Socket::Write( const void *text, size_t size ) {
    int st = -1;
+
+   ssize_t wrintingTwo = write( this->idSocket , text, size);
+
+   st = wrintingTwo;
 
    if ( -1 == st ) {
 //      throw std::runtime_error( "Socket::Write( void *, size_t )" );
@@ -109,6 +118,10 @@ size_t Socket::Write( const void *text, size_t size ) {
  **/
 size_t Socket::Write( const char *text ) {
    int st = -1;
+
+   ssize_t writing = Write( text , strlen(text));
+
+   st = writing;
 
    if ( -1 == st ) {
 //      throw std::runtime_error( "Socket::Write( void *, size_t )" );

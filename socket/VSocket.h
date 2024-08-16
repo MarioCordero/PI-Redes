@@ -25,6 +25,7 @@ class VSocket{
         int MakeConnection(const char *, int);
         virtual int Connect(const char *, int) = 0;
 
+        //TF is this?
         virtual size_t Read(const void *, size_t) = 0;
         virtual size_t Write(const void *, size_t) = 0;
         virtual size_t Write(const char *) = 0;
