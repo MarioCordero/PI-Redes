@@ -120,21 +120,29 @@ int VSocket::MakeConnection( const char * hostip, int port ) {
         int st;
 
         //Define an addres for the host
+        //sockaddr_in is a struct on c/c++ that stores an IP and a port
         struct sockaddr_in host4;
 
-        //TF is this?
-        memset( (char *) &host4, 0, sizeof( host4 ) );
+        //void *memset(void *ptr, int value, size_t num);
+        //initialize the host4 structure in 0
+        memset( (char *)&host4 , 0 , sizeof( host4 ) );
 
+        //Type of direction using in the struct host4 (IPv4)
+        //sin_family
+        //Es un campo de la estructura sockaddr_in que especifica el tipo de direcciones que la estructura puede manejar.
         host4.sin_family = AF_INET;
 
         //This works jus to prove if we can stablish a connection with AF_INET and the port given
+        // Es una función de la biblioteca de sockets en C/C++ que convierte direcciones IP en formato de texto (como "192.168.1.1") a su formato binario en una estructura in_addr o in6_addr, dependiendo de si se está utilizando IPv4 o IPv6.
+        // inet_pton significa "Internet Presentation to Numeric".
         st = inet_pton( AF_INET, hostip, &host4.sin_addr );
 
         if ( -1 == st ) {
             throw(std::runtime_error( "VSocket::DoConnect, inet_pton" ));
         }
 
-        //TF is this?
+        //La línea host4.sin_port = htons(port); se utiliza para asignar el número de puerto al campo sin_port de la estructura sockaddr_in, y convierte el número de puerto al formato de bytes adecuado para la red. Aquí te explico cada parte:
+
         host4.sin_port = htons( port );
 
         //Try the connection
