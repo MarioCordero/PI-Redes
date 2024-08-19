@@ -41,3 +41,7 @@ clean:
 #make
 #./ipv4-test.out
 #make clean
+
+#make
+#make ipv6-test.out
+#./ipv6-test.out

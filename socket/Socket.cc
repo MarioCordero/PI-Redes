@@ -15,6 +15,7 @@
 #include <arpa/inet.h>	// for inet_pton
 #include <sys/types.h>	// for connect
 #include <unistd.h>     //
+#include <iostream>
 
 #include <sys/socket.h> // This .h is a library on linux
 
@@ -31,8 +32,8 @@
   *
  **/
 Socket::Socket( char type, bool IPv6 ){
-
-   this->CreateVSocket( type, IPv6 );
+   
+   this->CreateVSocket( type, IPv6 );   
 
 }
 
@@ -59,6 +60,12 @@ int Socket::Connect( const char * host, int port ) {
 
 }
 
+int Socket::Connect( const char * server, const char * service ) {
+
+   return this->MakeConnection( server, service );
+
+}
+
 
 /**
   * Read method
@@ -76,7 +83,7 @@ size_t Socket::Read( const void * text, size_t size ) {
    st = hola;
 
    if ( -1 == st ) {
-      //throw std::runtime_error( "Socket::Read( const void *, size_t )" );
+      throw std::runtime_error( "Socket::Read( const void *, size_t )" );
    }
 
    return st;
@@ -100,7 +107,7 @@ size_t Socket::Write( const void *text, size_t size ) {
    st = wrintingTwo;
 
    if ( -1 == st ) {
-//      throw std::runtime_error( "Socket::Write( void *, size_t )" );
+      throw std::runtime_error( "Socket::Write( void *, size_t )" );
    }
 
    return st;
@@ -124,7 +131,7 @@ size_t Socket::Write( const char *text ) {
    st = writing;
 
    if ( -1 == st ) {
-//      throw std::runtime_error( "Socket::Write( void *, size_t )" );
+      throw std::runtime_error( "Socket::Write( void *, size_t )" );
    }
 
    return st;

@@ -23,9 +23,13 @@ class VSocket{
 
         void Close();
         int MakeConnection(const char *, int);
+        int MakeConnection( const char *, const char *);
+
+        // Virtual methods, they will not implement on VSocket.h
         virtual int Connect(const char *, int) = 0;
 
-        //TF is this?
+        virtual int Connect( const char *, const char * ) = 0; // New
+
         virtual size_t Read(const void *, size_t) = 0;
         virtual size_t Write(const void *, size_t) = 0;
         virtual size_t Write(const char *) = 0;

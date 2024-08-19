@@ -26,6 +26,9 @@ class Socket : public VSocket {
       Socket( char, bool = false );
       ~Socket();
       int Connect( const char *, int );
+
+      int Connect( const char *, const char * ); //A new a method overloaded
+
       size_t Read( const void *, size_t );
       size_t Write( const void *, size_t );
       size_t Write( const char * );

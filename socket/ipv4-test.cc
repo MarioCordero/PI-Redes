@@ -15,8 +15,9 @@ int main( int argc, char * argv[] ) {
    const char * ose = "163.178.104.62";
    const char * request = "GET /pirofs/index.php?disk=Disk-01&cmd=ls HTTP/1.1\r\nhost: redes.ecci\r\n\r\n";
 
-   VSocket * s;	
-   char a[512];
+   VSocket * s;            //Declares a pointer to an instance of the VSocket
+
+   char a[512];            //This array will allocate 512 bytes of memory
 
    s = new Socket( 's' );  //Creates a Socket class, it's a subclase of VSocket
 
