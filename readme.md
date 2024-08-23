@@ -9,8 +9,8 @@ En esta carpeta habrán varias carpetas con los trabajos asignados para el curso
 ### Clonar el Repositorio
 
    ```bash
-   git clone <URL_DEL_REPOSITORIO>
-   cd <NOMBRE_DEL_REPOSITORIO>
+   git clone https://github.com/MarioCordero/PI-Redes.git>
+   cd https://github.com/MarioCordero/PI-Redes.git
    ```
    Dentro del repositorio habrán varias sub-carpetas con los trabajos hechos en clase.
 
