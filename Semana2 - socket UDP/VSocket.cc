@@ -22,6 +22,7 @@
 #include <arpa/inet.h>			// ntohs
 #include <unistd.h>			// close
 //#include <sys/types.h>
+#include <iostream>
 #include <arpa/inet.h>
 #include <netdb.h>			// getaddrinfo, freeaddrinfo
 
@@ -39,7 +40,38 @@
   *
  **/
 void VSocket::CreateVSocket( char t, bool IPv6 ){
+	//The structure of the Unix socket syscall 
+   //int socket(int domain, int type, int protocol);
 
+	//First the domain
+    int domain = AF_INET; //IPv4 Internet protocols
+    if(IPv6){
+
+        //------------------------------- IPv6 -------------------------------//
+        std::cout<<"IPV6 confirmed.";
+        domain = AF_INET6; //IPv6 Internet protocols
+
+    }
+        
+    //------------------------------- IPv4 -------------------------------//
+    //Then the type
+    int type = -1;
+    if(t=='s'){             //stream
+        type = SOCK_STREAM;
+    }else if(t=='d'){       //datagram
+        type = SOCK_DGRAM;
+    }
+
+    //Last the protocol
+    int protocol = 0;
+
+    //Now, create the socket using the linux library
+    this->idSocket = socket(domain, type, protocol);
+
+    //Check if there's an error
+    if (this->idSocket == -1) {
+        throw(std::runtime_error("Problem Crating Vsocket..."));
+    }
 }
 
 
@@ -59,13 +91,11 @@ VSocket::~VSocket() {
   *    use Unix close system call (once opened a socket is managed like a file in Unix)
   *
  **/
-void VSocket::Close(){
-   int st;
-
-   if ( -1 == st ) {
-      throw std::runtime_error( "VSocket::Close()" );
-   }
-
+void VSocket::Close() {
+    //Try to close the socket
+    if (close(this->idSocket) == -1) {
+        throw std::runtime_error("Error closing socket in Socket::Close()");
+    }
 }
 
 
@@ -78,15 +108,78 @@ void VSocket::Close(){
   *
  **/
 int VSocket::MakeConnection( const char * hostip, int port ) {
-   int st;
 
-   if ( -1 == st ) {
-      perror( "VSocket::connect" );
-      throw std::runtime_error( "VSocket::MakeConnection" );
-   }
+	//The structure of the connect Unix syscall 
+	//int connect(int sockfd, const struct sockaddr *addr,socklen_t addrlen);
+	//sockfd = sockID
+    try{
+        int st;
 
-   return st;
+        if(this->IPv6){
+            //------------------------------ IPv6 ------------------------------//
 
+            // Para IPv6 
+            struct sockaddr_in6  host6;
+            struct sockaddr * ha;
+
+            memset( &host6, 0, sizeof( host6 ) );
+            host6.sin6_family = AF_INET6;
+            st = inet_pton( AF_INET6, hostip, &host6.sin6_addr );
+            if ( 0 <= st ) {	// 0 means invalid address, -1 means address error
+               throw std::runtime_error( "Socket::Connect( const char *, int ) [inet_pton]" );
+            }
+            host6.sin6_port = htons( port );
+            ha = (struct sockaddr *) &host6;
+            socklen_t len = sizeof( host6 );
+            st = connect( this->idSocket, ha, len );
+            if ( -1 == st ) {
+               throw std::runtime_error( "Socket::Connect( const char *, int ) [connect]" );
+            }
+
+        }else{
+            //------------------------------ IPv4 ------------------------------//
+
+            //Define an addres for the host
+            //sockaddr_in is a struct on c/c++ that stores an IP and a port
+            struct sockaddr_in host4;
+
+            //void *memset(void *ptr, int value, size_t num);
+            //initialize the host4 structure in 0
+            memset( (char *)&host4 , 0 , sizeof( host4 ) );
+
+            //Type of direction using in the struct host4 (IPv4)
+            //sin_family
+            //Es un campo de la estructura sockaddr_in que especifica el tipo de direcciones que la estructura puede manejar.
+            host4.sin_family = AF_INET;
+
+            //This works jus to prove if we can stablish a connection with AF_INET and the port given
+            // Es una función de la biblioteca de sockets en C/C++ que convierte direcciones IP en formato de texto (como "192.168.1.1") a su formato binario en una estructura in_addr o in6_addr, dependiendo de si se está utilizando IPv4 o IPv6.
+            // inet_pton significa "Internet Presentation to Numeric".
+            st = inet_pton( AF_INET, hostip, &host4.sin_addr );
+
+            if ( -1 == st ) {
+                throw(std::runtime_error( "VSocket::DoConnect, inet_pton" ));
+            }
+
+            //La línea host4.sin_port = htons(port); se utiliza para asignar el número de puerto al campo sin_port de la estructura sockaddr_in, y convierte el número de puerto al formato de bytes adecuado para la red. Aquí te explico cada parte:
+
+            host4.sin_port = htons( port );
+
+            //Try the connection
+            st = connect( idSocket, (sockaddr *) &host4, sizeof( host4 ) );
+
+            if ( -1 == st ) {
+                throw(std::runtime_error( "VSocket::DoConnect, connect" ));
+            }
+
+            return st;
+        }
+
+    }catch(const std::exception& e){
+
+        std::cerr << '\n' << e.what() << '\n';
+
+    }
 }
 
 
@@ -100,7 +193,20 @@ int VSocket::MakeConnection( const char * hostip, int port ) {
   *
  **/
 int VSocket::Bind( int port ) {
+
    int st = -1;
+
+   struct sockaddr_in host4;
+
+   host4.sin_family = AF_INET;
+
+   host4.sin_addr.s_addr = htonl( INADDR_ANY );
+
+   host4.sin_port = htons( port );
+
+   memset(host4.sin_zero, '\0', sizeof (host4.sin_zero));
+
+   st = bind( idSocket, (const sockaddr *) &host4 , sizeof( host4 ));
 
    return st;
 
@@ -115,10 +221,17 @@ int VSocket::Bind( int port ) {
   *  @param	void * addr address to send data
   *
   *  Send data to another network point (addr) without connection (Datagram)
-  *
+  *	 [man 2 send]
  **/
 size_t VSocket::sendTo( const void * buffer, size_t size, void * addr ) {
+
    int st = -1;
+
+   struct sockaddr_in *dest_addr = (struct sockaddr_in *) addr;
+
+   socklen_t addrlen = sizeof(*dest_addr);
+
+   st = sendto( idSocket , buffer, size, 0, (struct sockaddr*)dest_addr, addrlen);
 
    return st;
 
@@ -135,12 +248,18 @@ size_t VSocket::sendTo( const void * buffer, size_t size, void * addr ) {
   *  @return	size_t bytes received
   *
   *  Receive data from another network point (addr) without connection (Datagram)
-  *
+  *  [man 2 recvfrom]
  **/
 size_t VSocket::recvFrom( void * buffer, size_t size, void * addr ) {
-   int st = -1;
 
-   return st;
+   	int st = -1;
 
+	struct sockaddr_in *dest_addr = (struct sockaddr_in *) addr;
+
+	socklen_t addrlen = sizeof(*dest_addr);
+
+	st = recvfrom( idSocket , buffer , size , 0, (struct sockaddr*)dest_addr, &addrlen);
+
+   	return st;
 }
 

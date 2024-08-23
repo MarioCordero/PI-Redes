@@ -14,6 +14,8 @@
 
 #include "VSocket.h"
 #include "Socket.h"
+#include <cstdlib>
+
 
 #define PORT    6789 
 #define MAXLINE 1024 
@@ -32,7 +34,7 @@ int main() {
    
    other.sin_family = AF_INET; 
    other.sin_port = htons(PORT); 
-   n = inet_pton( AF_INET, "10.1.35.50", &other.sin_addr );	// IP address to test our client with a Python server on lab 3-5
+   n = inet_pton( AF_INET, "172.16.123.70", &other.sin_addr );	// IP address to test our client with a Python server on lab 3-5
    if ( 1 != n ) {
       printf( "Error converting from IP address\n" );
       exit( 23 );
