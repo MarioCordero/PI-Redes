@@ -58,7 +58,7 @@
 
 - IPv4
    ```bash
-   make; make ipv4-udp-server.out
+   make USE_IPV4=yes; make ipv4-udp-server.out
 
    ./ipv4-udp-server.out #(En una terminal)
 
@@ -67,9 +67,9 @@
 
 - IPv6
    ```bash
-   make; make ipv4-udp-server.out
+   make USE_IPV4=no; make ipv6-udp-server.out 
 
-   ./ipv4-udp-server.out #(En una terminal)
+   ./ipv6-udp-server.out #(En una terminal)
 
-   ./ipv4-udp-client.out #(En otra terminal)
+   ./ipv6-udp-client.out #(En otra terminal)
    ```
