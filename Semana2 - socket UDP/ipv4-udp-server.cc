@@ -17,36 +17,33 @@
 #define PORT	 6789 
 #define MAXLINE 1024 
 
-int main() { 
+int main() {
 
-   printf("PENE");
+	VSocket * server;
+	int len, n;
+	int sockfd;
+	struct sockaddr other; // struct sockaddr is used for compatibility with functions that need a generic address type, while struct sockaddr_in is used for specific handling of IPv4 addresses.
+	char buffer[MAXLINE];
+	char *hello = (char *) "Hello from CI0123 server";
 
-   VSocket * server;
-   int len, n; 
-   int sockfd;
-   struct sockaddr other;
-   char buffer[MAXLINE]; 
-   char *hello = (char *) "Hello from CI0123 server"; 
-	
-   server = new Socket( 'd', false );
+	server = new Socket( 'd', false ); // Create a socket in IPv4
 
-   server->Bind( PORT );
+	server->Bind( PORT ); // bind = link, binds the UDP socket to the specified port number (6789).
 
-   memset( &other, 0, sizeof( other ) );
+	memset( &other, 0, sizeof( other ) ); // Set the Struct sockaddr in 0, empty
 
-   n = server->recvFrom( (void *) buffer, MAXLINE, (void *) &other );	// Mensaje de los www servers
+	n = server->recvFrom( (void *) buffer, MAXLINE, (void *) &other );	// Mensaje de los www servers
 
-   buffer[n] = '\0'; 
+	buffer[n] = '\0'; // Adds a null char at the end of the string
 
-   printf("Server: message received: %s\n", buffer);
+	printf("Server: message received: %s\n", buffer);
 
-   server->sendTo( (const void *) hello, strlen( hello ), (void *) &other );
+	server->sendTo( (const void *) hello, strlen( hello ), (void *) &other );
 
-   printf("Server: Hello message sent.\n"); 
+	printf("Server: Hello message sent.\n");
 
-   server->Close();
-   
-   return 0;
+	server->Close();
 
-} 
+	return 0;
+}
 
