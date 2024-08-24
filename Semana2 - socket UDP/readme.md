@@ -1,4 +1,4 @@
-# Semana1 - socket msg UDP
+# Semana2 - socket msg UDP IPv4 & IPv6
 
 ## Descripción
 
@@ -11,7 +11,7 @@
 
    **Procedimiento**
 
-   1. Funcionamiento UDP
+   1. Funcionamiento UDP en IPv4
 
       - Completar la clase "VSocket" para poder intercambiar mensajes UDP
 
@@ -41,3 +41,35 @@
          - ipv4-udp-client.cc
          - ipv4-udp-server.cc
 
+   2. Funcionamiento UDP en IPv6
+   
+      **Objetivo**
+         - Completar las clases "VSocket" y "Socket" en C++ para lograr el intercambio de mensajes entre computadoras que no comparten memoria utilizando datagramas con el protocolo UDP en IPv6
+
+      **Tareas**
+        - Completar la clase C++ "Socket" para poder intercambiar mensajes entre procesos que no comparten memoria.
+        - Se facilita los archivos base para las clases, deben completar la funcionalidad para IPv6:
+        - Bind()
+        - SentTo()
+        - ReceiveFrom()
+        - Los ejemplos "ipv6-udp-client.cc" y "ipv6-udp-server.cc" deben funcionar correctamente
+
+   **Ejecución**
+
+- IPv4
+   ```bash
+   make; make ipv4-udp-server.out
+
+   ./ipv4-udp-server.out #(En una terminal)
+
+   ./ipv4-udp-client.out #(En otra terminal)
+   ```
+
+- IPv6
+   ```bash
+   make; make ipv4-udp-server.out
+
+   ./ipv4-udp-server.out #(En una terminal)
+
+   ./ipv4-udp-client.out #(En otra terminal)
+   ```

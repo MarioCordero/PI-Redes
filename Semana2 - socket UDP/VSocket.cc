@@ -49,6 +49,7 @@ void VSocket::CreateVSocket( char t, bool IPv6 ){
 
         //------------------------------- IPv6 -------------------------------//
         std::cout<<"IPV6 confirmed.";
+        this->IPv6 = true;
         domain = AF_INET6; //IPv6 Internet protocols
 
     }
@@ -194,22 +195,37 @@ int VSocket::MakeConnection( const char * hostip, int port ) {
  **/
 int VSocket::Bind( int port ) {
 
-   int st = -1;
+    int st = -1;
 
-   struct sockaddr_in host4;
+    if(this->IPv6){
+        
+        struct sockaddr_in6 host6;
 
-   host4.sin_family = AF_INET;
+        memset(&host6, 0, sizeof(host6)); // Zero out the structure
 
-   host4.sin_addr.s_addr = htonl( INADDR_ANY );
+        host6.sin6_family = AF_INET6; // IPv6
+        host6.sin6_addr = in6addr_any; // Bind to any address
+        host6.sin6_port = htons(port); // Convert port number to network byte order
 
-   host4.sin_port = htons( port );
+        // Bind the socket to the address
+        st = bind(idSocket, (const sockaddr *)&host6, sizeof(host6));
 
-   memset(host4.sin_zero, '\0', sizeof (host4.sin_zero));
+    }else{
+        struct sockaddr_in host4;
 
-   st = bind( idSocket, (const sockaddr *) &host4 , sizeof( host4 ));
+        host4.sin_family = AF_INET;
 
-   return st;
+        host4.sin_addr.s_addr = htonl( INADDR_ANY );
 
+        host4.sin_port = htons( port );
+
+        memset(host4.sin_zero, '\0', sizeof (host4.sin_zero));
+
+        st = bind( idSocket, (const sockaddr *) &host4 , sizeof( host4 ));
+
+    }
+
+    return st;
 }
 
 
