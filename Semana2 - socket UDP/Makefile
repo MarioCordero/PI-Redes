@@ -28,8 +28,10 @@ ipv4-udp-server.out: ipv4-udp-server.o VSocket.o Socket.o
 clean:
 	rm -f *.o *.out
 
+#---------------------PARA IPv4---------------------#
 #make
 #make ipv4-udp-server.out 
 #./ipv4-udp-server.out (En una terminal)
 #./ipv4-udp-client.out (En otra terminal)
 
+#---------------------PARA IPv6---------------------#
