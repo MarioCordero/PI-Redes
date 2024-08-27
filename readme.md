@@ -19,7 +19,9 @@ En esta carpeta habrán varias carpetas con los trabajos asignados para el curso
 
    En esta carpeta está el trabajo para la semana #1, conexión de un socket tanto en IPv4 como en IPv6.
 
-- **Semana 2 - **
+- **Semana2 - socket UDP**
+  
+  En esta carpeta está el trabajo para la semana #2, conexión entre servidor - cliente por medio de UDP, IPv4 e IPv6.
 
 
 ## Uso
