@@ -25,7 +25,7 @@ int main( int argc, char * argv[] ) {
 
    if (argc > 1 ) {
       port = 443;
-      client = new SSLSocket();	// Create a new stream socket for IPv4
+      client = new SSLSocket(port);	// Create a new stream socket for IPv4
    } else {
       client = new Socket( 's' );
       port = 80;

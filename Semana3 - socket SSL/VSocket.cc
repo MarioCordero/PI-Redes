@@ -75,6 +75,11 @@ void VSocket::CreateVSocket( char t, bool IPv6 ){
     }
 }
 
+//Creates just a socketID
+void VSocket::CreateVSocket( int port ){
+	this->idSocket = port;
+}
+
 
 /**
   * Class destructor
