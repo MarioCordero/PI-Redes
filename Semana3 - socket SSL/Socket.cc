@@ -1,7 +1,12 @@
 /**
- *   CI0123 PIRO
- *   Clase para utilizar los "sockets" en Linux
- *
+  *  Universidad de Costa Rica
+  *  ECCI
+  *  CI0123 Proyecto integrador de redes y sistemas operativos
+  *  2024-ii
+  *  Grupo: 3 y 5
+  *
+  *   Clase para programar con los "sockets" en Linux
+  *
  **/
 
 #include <stdio.h>	// for perror
@@ -35,7 +40,6 @@ Socket::Socket( char type, bool IPv6 ){
   *
  **/
 Socket::~Socket(){
-    this->Close();
 }
 
 
@@ -51,6 +55,12 @@ int Socket::Connect( const char * host, int port ) {
 
    return this->MakeConnection( host, port );
 
+}
+
+int Socket::Connect( const char * server, const char * service ) {
+
+   return this->MakeConnection( server, service );
+   
 }
 
 
@@ -112,3 +122,4 @@ size_t Socket::Write( const char *text ) {
    return st;
 
 }
+

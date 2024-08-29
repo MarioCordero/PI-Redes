@@ -24,12 +24,12 @@
  **/
 SSLSocket::SSLSocket( bool IPv6 ) {
 
-   this->CreateVSocket( 's', IPv6 );
+	this->CreateVSocket( 's', IPv6 );
 
-   this->SSLContext = nullptr;
-   this->SSLStruct = nullptr;
+	this->SSLContext = nullptr;
+	this->SSLStruct = nullptr;
 
-   this->Init();					// Initializes to client context
+	this->Init();					// Initializes to client context
 
 }
 
@@ -45,6 +45,7 @@ SSLSocket::SSLSocket( bool IPv6 ) {
   *
  **/
 SSLSocket::SSLSocket( char * certFileName, char * keyFileName, bool IPv6 ) {
+
 }
 
 
@@ -56,7 +57,7 @@ SSLSocket::SSLSocket( char * certFileName, char * keyFileName, bool IPv6 ) {
  **/
 SSLSocket::SSLSocket( int id ) {
 
-   this->CreateVSocket( id );
+	this->CreateVSocket( id );
 
 }
 
@@ -68,14 +69,14 @@ SSLSocket::SSLSocket( int id ) {
 SSLSocket::~SSLSocket() {
 
 // SSL destroy
-   if ( nullptr != this->SSLContext ) {
-      SSL_CTX_free( reinterpret_cast<SSL_CTX *>( this->SSLContext ) );
-   }
-   if ( nullptr != this->SSLStruct ) {
-      SSL_free( reinterpret_cast<SSL *>( this->SSLStruct ) );
-   }
+	if ( nullptr != this->SSLContext ) {
+		SSL_CTX_free( reinterpret_cast<SSL_CTX *>( this->SSLContext ) );
+	}
+	if ( nullptr != this->SSLStruct ) {
+		SSL_free( reinterpret_cast<SSL *>( this->SSLStruct ) );
+	}
 
-   this->Close();
+	this->Close();
 
 }
 
@@ -88,10 +89,22 @@ SSLSocket::~SSLSocket() {
   *
  **/
 void SSLSocket::Init( bool serverContext ) {
-   SSL * ssl = nullptr;
 
-   this->InitContext( serverContext );
+	SSL * ssl = nullptr;
 
+	try {
+        this->InitContext(serverContext);
+    } catch (const std::exception &e) {
+        //Do something jsjs
+    }
+
+	ssl = SSL_new( (SSL_CTX *) this->SSLContext );
+	// Check for errors
+    if (ssl == nullptr) {
+        //Do something jsjs
+    }
+
+	this->SSLStruct = (void *) ssl;
 }
 
 
@@ -103,17 +116,34 @@ void SSLSocket::Init( bool serverContext ) {
   *
  **/
 void SSLSocket::InitContext( bool serverContext ) {
-   const SSL_METHOD * method;
-   SSL_CTX * context;
 
-   if ( serverContext ) {
-   } else {
-   }
+	//We must create a method to define our context, configure the base to make TLS safe connections from a client
+	const SSL_METHOD * method = TLS_client_method();
+	//Check for errors
+	if (method == nullptr) {
+		//Do something jsjs
+	}
 
-   if ( nullptr == method ) {
-      throw std::runtime_error( "SSLSocket::InitContext( bool )" );
-   }
+	//Creates a new context SSL/TLS for the client, "context" will be used to manage and configure safe conections of this client
+	SSL_CTX * context = SSL_CTX_new( method );
+	//Check for errors
+	if (context == nullptr) {
+		//Do something jsjs
+	}
 
+	//Setting the SSL context to the atribute of the class
+	this->SSLContext = (void *) context;
+
+	//Is this a server?
+	if ( serverContext ) {
+
+	} else {
+
+	}
+
+	if ( nullptr == method ) {
+		throw std::runtime_error( "SSLSocket::InitContext( bool )" );
+	}
 }
 
 
@@ -140,12 +170,29 @@ void SSLSocket::InitContext( bool serverContext ) {
  *
  **/
 int SSLSocket::Connect( const char * hostName, int port ) {
-   int st;
 
-   st = this->DoConnect( hostName, port );		// Establish a non ssl connection first
+	int st; 	// st = status
+	st = this->MakeConnection( hostName, port );		// Establish a non ssl connection first
+	// check for errors
+	if (st != 0) { //If there's some error
+		return st;
+	}
 
-   return st;
+	// Call SSL_set_fd
+	st = SSL_set_fd(static_cast<SSL*>(this->SSLStruct), this->idSocket);
+	// check for errors
+	if (st == 0) { //If there's some error
+		//Do something jsjs
+	}
+	
+	// Call SSL_connect()
+	st = SSL_connect(static_cast<SSL*>(this->SSLStruct));
+	// check for errors
+	if (st != 1) { //If there's some error
+		//Do something jsjs
+	}
 
+	return st;
 }
 
 
@@ -160,12 +207,26 @@ int SSLSocket::Connect( const char * hostName, int port ) {
  *
  **/
 int SSLSocket::Connect( const char * host, const char * service ) {
-   int st;
+	int st; 	// st = status
+	st = this->MakeConnection( host, service );		// Establish a non ssl connection first
+	// check for errors
+	if (st != 0) { //If there's some error
+		return st;
+	}
 
-   st = this->MakeConnection( host, service );
-
-   return st;
-
+	// Call SSL_set_fd
+	st = SSL_set_fd(static_cast<SSL*>(this->SSLStruct), this->idSocket);
+	// check for errors
+	if (st == 0) { //If there's some error
+		//Do something jsjs
+	}
+	
+	// Call SSL_connect()
+	st = SSL_connect(static_cast<SSL*>(this->SSLStruct));
+	// check for errors
+	if (st != 1) { //If there's some error
+		//Do something jsjs
+	}
 }
 
 
@@ -182,13 +243,15 @@ int SSLSocket::Connect( const char * host, const char * service ) {
   *
  **/
 size_t SSLSocket::Read( void * buffer, size_t size ) {
-   int st = -1;
+	int st = -1;
 
-   if ( -1 == st ) {
-      throw std::runtime_error( "SSLSocket::Read( void *, size_t )" );
-   }
+	st = SSL_read( static_cast<SSL*>(this->SSLStruct) , buffer , size );
 
-   return st;
+	if ( -1 == st ) {
+		throw std::runtime_error( "SSLSocket::Read( void *, size_t )" );
+	}
+
+	return st;
 
 }
 
@@ -206,13 +269,15 @@ size_t SSLSocket::Read( void * buffer, size_t size ) {
   *
  **/
 size_t SSLSocket::Write( const char * string ) {
-   int st = -1;
+	int st = -1;
 
-   if ( -1 == st ) {
-      throw std::runtime_error( "SSLSocket::Write( const char * )" );
-   }
+	st = Write( string , strlen(string));
 
-   return st;
+	if ( -1 == st ) {
+		throw std::runtime_error( "SSLSocket::Write( const char * )" );
+	}
+
+	return st;
 
 }
 
@@ -230,14 +295,15 @@ size_t SSLSocket::Write( const char * string ) {
   *
  **/
 size_t SSLSocket::Write( const void * buffer, size_t size ) {
-   int st = -1;
+	int st = -1;
 
-   if ( -1 == st ) {
-      throw std::runtime_error( "SSLSocket::Write( void *, size_t )" );
-   }
+	st = SSL_write( static_cast<SSL*>(this->SSLStruct) , buffer , size );
 
-   return st;
+	if ( -1 == st ) {
+		throw std::runtime_error( "SSLSocket::Write( void *, size_t )" );
+	}
 
+	return st;
 }
 
 
@@ -246,22 +312,22 @@ size_t SSLSocket::Write( const void * buffer, size_t size ) {
  *
  **/
 void SSLSocket::ShowCerts() {
-   X509 *cert;
-   char *line;
+	X509 *cert;
+	char *line;
 
-   cert = SSL_get_peer_certificate( (SSL *) this->SSLStruct );		 // Get certificates (if available)
-   if ( nullptr != cert ) {
-      printf("Server certificates:\n");
-      line = X509_NAME_oneline( X509_get_subject_name( cert ), 0, 0 );
-      printf( "Subject: %s\n", line );
-      free( line );
-      line = X509_NAME_oneline( X509_get_issuer_name( cert ), 0, 0 );
-      printf( "Issuer: %s\n", line );
-      free( line );
-      X509_free( cert );
-   } else {
-      printf( "No certificates.\n" );
-   }
+	cert = SSL_get_peer_certificate( (SSL *) this->SSLStruct );		 // Get certificates (if available)
+	if ( nullptr != cert ) {
+		printf("Server certificates:\n");
+		line = X509_NAME_oneline( X509_get_subject_name( cert ), 0, 0 );
+		printf( "Subject: %s\n", line );
+		free( line );
+		line = X509_NAME_oneline( X509_get_issuer_name( cert ), 0, 0 );
+		printf( "Issuer: %s\n", line );
+		free( line );
+		X509_free( cert );
+	} else {
+		printf( "No certificates.\n" );
+	}
 
 }
 
@@ -272,6 +338,6 @@ void SSLSocket::ShowCerts() {
  **/
 const char * SSLSocket::GetCipher() {
 
-   return SSL_get_cipher( reinterpret_cast<SSL *>( this->SSLStruct ) );
+	return SSL_get_cipher( reinterpret_cast<SSL *>( this->SSLStruct ) );
 
 }

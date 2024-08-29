@@ -15,8 +15,6 @@
 
 #define	MAXBUF	1024
 
-/**
-**/
 int main( int argc, char * argv[] ) {
    VSocket * client;
    int st, port = 80;
@@ -38,5 +36,4 @@ int main( int argc, char * argv[] ) {
    client->Write(  (char * ) lego, strlen( lego ) );
    st = client->Read( a, MAXBUF );
    printf( "Bytes read %d\n%s\n", st, a);
-
 }

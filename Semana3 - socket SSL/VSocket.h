@@ -15,12 +15,13 @@
  
 class VSocket {
    public:
-       void CreateVSocket( char, bool=false );
-       void CreateVSocket( int );
+      void CreateVSocket( char, bool=false );
+      void CreateVSocket( int );
       ~VSocket();
 
       void Close();
-      int MakeConnection( const char *, int );
+      int MakeConnection(const char *, int);
+      int MakeConnection( const char *, const char *);
       virtual int Connect( const char *, int ) = 0;
 
       virtual size_t Read( void *, size_t ) = 0;
@@ -40,3 +41,4 @@ class VSocket {
 };
 
 #endif // VSocket_h
+
