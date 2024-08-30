@@ -77,9 +77,7 @@
    - El manual del sistema operativo Unix para los otros llamados al sistema
 
 
-   TAREA 
+## TAREA
 
-   Read.Me Semana 3
-
-Objetivos
-   Completar la funcionalidad de la clase SSLSocket 
+   **Objetivo**
+   - Completar la funcionalidad de la clase SSLSocket.

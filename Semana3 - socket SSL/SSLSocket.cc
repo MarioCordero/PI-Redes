@@ -271,7 +271,7 @@ size_t SSLSocket::Read( void * buffer, size_t size ) {
 size_t SSLSocket::Write( const char * string ) {
 	int st = -1;
 
-	st = Write( string , strlen(string));
+	st = SSL_write( static_cast<SSL*>(this->SSLStruct) , string , strlen(string) );
 
 	if ( -1 == st ) {
 		throw std::runtime_error( "SSLSocket::Write( const char * )" );

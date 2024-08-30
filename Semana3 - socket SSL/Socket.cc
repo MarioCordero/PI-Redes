@@ -15,8 +15,11 @@
 #include <arpa/inet.h>	// for inet_pton
 #include <sys/types.h>	// for connect 
 #include <sys/socket.h>
+#include <unistd.h>     //
+#include <iostream>
 
 #include "Socket.h"
+#include <stdexcept>
 
 /**
   *  Class constructor
@@ -75,8 +78,12 @@ int Socket::Connect( const char * server, const char * service ) {
 size_t Socket::Read( void * text, size_t size ) {
    int st = -1;
 
+   ssize_t hola = read( this->idSocket , const_cast<void*>(text) , size);
+
+   st = hola;
+
    if ( -1 == st ) {
-//      throw std::runtime_error( "Socket::Read( const void *, size_t )" );
+      throw std::runtime_error( "Socket::Read( const void *, size_t )" );
    }
 
    return st;
@@ -95,8 +102,12 @@ size_t Socket::Read( void * text, size_t size ) {
 size_t Socket::Write( const void *text, size_t size ) {
    int st = -1;
 
+   ssize_t wrintingTwo = write( this->idSocket , text, size);
+
+   st = wrintingTwo;
+
    if ( -1 == st ) {
-//      throw std::runtime_error( "Socket::Write( void *, size_t )" );
+      throw std::runtime_error( "Socket::Write( void *, size_t )" );
    }
 
    return st;
@@ -115,8 +126,12 @@ size_t Socket::Write( const void *text, size_t size ) {
 size_t Socket::Write( const char *text ) {
    int st = -1;
 
+   ssize_t writing = Write( text , strlen(text));
+
+   st = writing;
+
    if ( -1 == st ) {
-//      throw std::runtime_error( "Socket::Write( void *, size_t )" );
+      throw std::runtime_error( "Socket::Write( void *, size_t )" );
    }
 
    return st;
