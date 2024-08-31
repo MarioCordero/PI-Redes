@@ -77,7 +77,35 @@
    - El manual del sistema operativo Unix para los otros llamados al sistema
 
 
-## TAREA
+## TAREA #3
+**Objetivos**
+- Completar la funcionalidad de la clase SSLSocket 
+- 
+## Ejecución
 
-   **Objetivo**
-   - Completar la funcionalidad de la clase SSLSocket.
+- IPv4 TCP
+   ```bash
+   make ipv4-ssl-cli.out 
+   ./ipv4-ssl-cli.out 
+   ```
+
+- TCP Client IPv4 o IPv6
+   ```bash
+   make tcp-cli.out
+   ```
+   - Conexión IPv4 sin SSL:
+      ```bash
+      ./tcp-cli.out 4 0
+      ```
+   - Conexión IPv4 con SSL:
+      ```bash
+      ./tcp-cli.out 4 1
+      ```
+   - Conexión IPv6 sin SSL:
+      ```bash
+      ./tcp-cli.out 6 0
+      ```
+   - Conexión IPv6 con SSL:
+      ```bash
+      ./tcp-cli.out 6 1
+      ```
