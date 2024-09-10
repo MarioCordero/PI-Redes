@@ -1,4 +1,4 @@
-# Semana2 - socket msg UDP IPv4 & IPv6
+# Semana3 - socket msg UDP IPv4 & IPv6
 
 ## Descripción
    **Objetivo**

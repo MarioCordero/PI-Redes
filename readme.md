@@ -27,6 +27,10 @@ En esta carpeta habrán varias carpetas con los trabajos asignados para el curso
   
    En esta carpeta está el trabajo para la semana #3, conexión de socket por SSL, IPv4 e IPv6.
 
+- **Semana4 - generar llaves VPN**
+  
+   En esta carpeta estrá la evidencia de construir un certificado auto-firmado.
+
 ## Uso
 
 **Ejecutar el Programa**
