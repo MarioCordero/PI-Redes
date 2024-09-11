@@ -13,3 +13,28 @@
 - Generar la llave de encripcion [DH] (/usr/share/easy-rsa/3.1.7/easyrsa gen-dh)
 - Generar la llave para el servidor (/usr/share/easy-rsa/3.1.7/easyrsa build-server-full redes )
 - Generar la llave para el cliente (/usr/share/easy-rsa/3.1.7/easyrsa build-client-full )
+
+**Informe**
+
+Lo que hice para generar el certificado
+
+-   ```bash
+    #Install easy-rsa
+    sudo apt install easy-rsa
+    ```
+
+-   ```bash
+    #Init the PKI
+    cd /usr/share/easy-rsa/
+    sudo ./easyrsa init-pki
+    ```
+
+-   ```bash
+    #Create a certification unit
+    sudo ./easyrsa build-ca
+    # I generate a passkey, then set the name [Easy-RSA CA]:CI0123 CA
+    ```
+
+-   ```bash
+    #Key to everything -> 2003
+    ```
