@@ -38,5 +38,9 @@ int main( int argc, char * argv[] ) {
       printf( "FALLO ESCRIB" );
    }
    st = client->Read( a, MAXBUF );
-   printf( "Bytes read %d\n%s\n", st, a);
+   printf( "Bytes read %d\n", st);
+   
+   std::string body = client->processHttpResponse(a);
+
+   printf("%s\n", body.c_str());
 }

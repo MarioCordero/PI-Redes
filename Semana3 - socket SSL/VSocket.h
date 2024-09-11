@@ -12,6 +12,7 @@
 
 #ifndef VSocket_h
 #define VSocket_h
+#include <string>
  
 class VSocket {
    public:
@@ -33,6 +34,7 @@ class VSocket {
 
       size_t sendTo( const void *, size_t, void * );
       size_t recvFrom( void *, size_t, void * );
+      std::string processHttpResponse(const std::string& response);
 
    protected:
       int idSocket;	// Socket identifier

@@ -25,6 +25,7 @@
 #include <iostream>
 #include <arpa/inet.h>
 #include <netdb.h>			// getaddrinfo, freeaddrinfo
+#include <string>
 
 #include "VSocket.h"
 
@@ -318,3 +319,27 @@ size_t VSocket::recvFrom( void * buffer, size_t size, void * addr ) {
    	return st;
 }
 
+/**
+ * @brief Procesa una respuesta HTTP para extraer el cuerpo del mensaje.
+ * 
+ * Esta función toma una respuesta HTTP completa como una cadena y separa el cuerpo del encabezado. El encabezado y el cuerpo están separados por una línea en blanco (`\r\n\r\n`). La función busca esta línea en blanco en la respuesta y devuelve el contenido del cuerpo que sigue a esta separación.
+ * 
+ * @param[in] response La respuesta HTTP completa en formato de cadena.
+ * 
+ * @return std::string El cuerpo del mensaje HTTP, es decir, el contenido que sigue a la separación del encabezado.
+ * 
+ * @throws std::runtime_error Si el formato de la respuesta HTTP no es válido (es decir, si no se encuentra la separación entre el encabezado y el cuerpo).
+ */
+std::string VSocket::processHttpResponse(const std::string& response) {
+    std::string delimiter = "\r\n\r\n";
+    size_t pos = response.find(delimiter);
+    
+    if (pos == std::string::npos) {
+        throw std::runtime_error("Invalid HTTP response format");
+    }
+    
+    size_t body_start = pos + delimiter.length();
+    std::string body = response.substr(body_start);
+    
+    return body;
+}
