@@ -23,10 +23,10 @@ class VSocket {
 		void Close();
 		int MakeConnection(const char *, int);
 		int MakeConnection( const char *, const char *);
-		int Listen( int queue ); //
+		int Listen( int queue ); 	//NEW
 		int Bind( int );
-		int DoAccept(); //
-		int Shutdown( int mode ); //
+		int DoAccept(); 			//NEW
+		int Shutdown( int mode ); 	//NEW
 		size_t sendTo( const void *, size_t, void * );
 		size_t recvFrom( void *, size_t, void * );
 		std::string processHttpResponse(const std::string& response);
@@ -37,8 +37,7 @@ class VSocket {
 		virtual size_t Read( void *, size_t ) = 0;
 		virtual size_t Write( const void *, size_t ) = 0;
 		virtual size_t Write( const char * ) = 0;
-
-
+		virtual VSocket * Accept() = 0; //NEW
 
 	protected:
 		int idSocket;	// Socket identifier

@@ -1,30 +1,25 @@
 /**
- *  Establece la definición de la clase Socket para efectuar la comunicación
- *  de procesos que no comparten memoria, utilizando un esquema de memoria
- *  distribuida.  El desarrollo de esta clase se hará en varias etapas, primero
- *  los métodos necesarios para los clientes, en la otras etapas los métodos para el servidor,
- *  manejo de IP-v6, conexiones seguras y otros
  *
- *  Universidad de Costa Rica
- *  ECCI
- *  CI0123 Proyecto integrador de redes y sistemas operativos
- *  2024-ii
- *  Grupos: 3 y 5
+ *   UCR-ECCI
+ *
+ *   VSocket class interface
+ *
+ *   2024-ii
  *
  **/
 
 #include <cstddef>
 #include <stdexcept>
 #include <cstdio>
-#include <cstring>			// memset
+#include <cstring>			    // memset
 
 #include <sys/socket.h>
 #include <arpa/inet.h>			// ntohs
-#include <unistd.h>			// close
-//#include <sys/types.h>
+#include <unistd.h>			    // close
+#include <sys/types.h>
 #include <iostream>
 #include <arpa/inet.h>
-#include <netdb.h>			// getaddrinfo, freeaddrinfo
+#include <netdb.h>			    // getaddrinfo, freeaddrinfo
 #include <string>
 
 #include "VSocket.h"
@@ -232,13 +227,16 @@ int VSocket::MakeConnection( const char * host, const char * service){
   *
  **/
 int VSocket::Listen( int queue ) {
-   int st = -1;
 
-   if ( -1 == st ) {
-      throw std::runtime_error( "VSocket::Listen( int )" );
-   }
+    int st = -1;
 
-   return st;
+    st = listen(this->idSocket , queue);
+
+    if ( -1 == st ) {
+        throw std::runtime_error( "VSocket::Listen( int )" );
+    }
+
+    return st;
 
 }
 
@@ -297,14 +295,17 @@ int VSocket::Bind( int port ) {
   *
  **/
 int VSocket::DoAccept(){
-   int st = -1;
-    
-   if ( -1 == st ) {
-      throw std::runtime_error( "VSocket::DoAccept()" );
-   }
 
-   return st;
+    int st = -1;
 
+    st = accept(this->idSocket, NULL , NULL);
+
+
+    if ( -1 == st ) {
+        throw std::runtime_error( "VSocket::DoAccept()" );
+    }
+
+    return st;
 }
 
 
