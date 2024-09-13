@@ -31,10 +31,7 @@
       - Programar los métodos: 
 
          ```bash
-            "size_t sendTo( const void *, size_t, void * )"       
-
-            "size_t recvFrom(void *, size_t, void * )"
-         ```   
+            "size_t senSemana3 - socket SSL/ipv4-ssl-cli.cc Semana3 - socket SSL/Makefile Semana3 - socket SSL/readme.md Semana3 - socket SSL/Socket.cc Semana3 - socket SSL/Socket.h Semana3 - socket SSL/ssl-cli.c Semana3 - socket SSL/SSLSocket.cc Semana3 - socket SSL/SSLSocket.h Semana3 - socket SSL/tcp-cli.cc Semana3 - socket SSL/VSocket.cc Semana3 - socket SSL/VSocket.h
          De manera que los procesos puedan intercambiar mensajes utilizando UDP
 
       - Archivos facilitados (clase VSocket de las asignaciones anteriores):

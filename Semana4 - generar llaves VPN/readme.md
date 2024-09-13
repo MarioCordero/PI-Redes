@@ -1,4 +1,4 @@
-# Semana4 - socket msg UDP IPv4 & IPv6
+# Semana4 - socket msg UDP IPv4 & IPv6 Trabajo en clase
 
 ## Descripción
 **Objetivo**
