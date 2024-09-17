@@ -1,4 +1,4 @@
-# Semana3 - socket msg UDP IPv4 & IPv6
+# Semana3 - socket msg UDP IPv4 & IPv6 Trabajo en clase
 
 ## Descripción
    **Objetivo**
@@ -77,7 +77,8 @@
    - El manual del sistema operativo Unix para los otros llamados al sistema
 
 
-## TAREA #3
+# Semana3 - socket msg UDP IPv4 & IPv6 Tarea
+
 **Objetivos**
 - Completar la funcionalidad de la clase SSLSocket 
 - 
