@@ -35,7 +35,7 @@
         |________________|                              |________________|
         ```
     
-    **Funcionamiento**
+    **Tareas**
 
     -   Completar las clases "VSocket" y "Socket" para poder intercambiar mensajes entre procesos que no comparten memoria. **Para este trabajo deben completar:**
 
@@ -69,10 +69,25 @@
 
             - ```Socket::Socket( int )``` otro constructor que recibe un entero como parámetro para construir una instancia en un socket que ya fue creado (abierto), se utiliza en "Accept" para construir y devolver una instancia de la clase "Socket"
 
-    - Los ejemplos provistos "ForkMirrorServer.cc" y "MirrorClient.cc" deben funcionar correctamente
+    - Los ejemplos provistos `ForkMirrorServer.cc` y `MirrorClient.cc` deben funcionar correctamente
 
-    - También el servidor con hilos "ThreadMirrorServer.cc" debe funcionar correctamente con el cliente "MirrorClient.cc"
+    - También el servidor con hilos `ThreadMirrorServer.cc` debe funcionar correctamente con el cliente `MirrorClient.cc`
 
+   - ## Ejecución
+     - IPv4
+        ```bash
+        make tcp-cli.out
+        ```
+
+- ## Notas
+	- Si la Address ya está en uso, correr:
+		```bash
+		sudo lsof -i :5678
+		```
+		```bash
+		sudo kill -9 <PID>
+		```
+	
 # Semana5 - server TCP IPV4 Tarea
 
   - ## Descripción 

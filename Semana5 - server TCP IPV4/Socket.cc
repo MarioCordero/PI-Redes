@@ -39,6 +39,19 @@ Socket::Socket( char type, bool IPv6 ){
 
 
 /**
+  *  Class constructor
+  *
+  *  @param     int id: socket descriptor
+  *
+ **/
+Socket::Socket( int id ) {
+
+   this->CreateVSocket( id );
+
+}
+
+
+/**
   * Class destructor
   *
  **/

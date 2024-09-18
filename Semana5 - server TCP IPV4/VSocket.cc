@@ -35,39 +35,35 @@
   *  @param     bool ipv6: if we need a IPv6 socket
   *
  **/
-void VSocket::CreateVSocket( char t, bool IPv6 ){
-	//The structure of the Unix socket syscall 
-   //int socket(int domain, int type, int protocol);
-
-	//First the domain
-    int domain = AF_INET; //IPv4 Internet protocols
-    if(IPv6){
-
+void VSocket::CreateVSocket( char t, bool IPv6 ) {
+    // First the domain
+    int domain = AF_INET; // IPv4 Internet protocols
+    if (IPv6) {
         //------------------------------- IPv6 -------------------------------//
-        std::cout<<"IPV6 confirmed.";
+        std::cout << "IPv6 confirmed." << std::endl;
         this->IPv6 = true;
-        domain = AF_INET6; //IPv6 Internet protocols
-
+        domain = AF_INET6; // IPv6 Internet protocols
     }
 
     //------------------------------- IPv4 -------------------------------//
-    //Then the type
+    // Then the type
     int type = -1;
-    if(t=='s'){             //stream
+    if (t == 's') {             // stream
         type = SOCK_STREAM;
-    }else if(t=='d'){       //datagram
+    } else if (t == 'd') {      // datagram
         type = SOCK_DGRAM;
     }
 
-    //Last the protocol
+    // Last the protocol
     int protocol = 0;
 
-    //Now, create the socket using the linux library
+    // Now, create the socket using the Linux library
     this->idSocket = socket(domain, type, protocol);
 
-    //Check if there's an error
+    // Check if there's an error
     if (this->idSocket == -1) {
-        throw(std::runtime_error("Problem Crating Vsocket..."));
+        std::cerr << "Error creating socket: " << strerror(errno) << std::endl;
+        throw std::runtime_error("Problem Creating Vsocket...");
     }
 }
 

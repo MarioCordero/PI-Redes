@@ -5,7 +5,7 @@
  *   Socket client/server example with threads
  *
  **/
- 
+
 #include <iostream>
 #include <thread>
 
@@ -22,13 +22,12 @@
  *
  **/
 void task( VSocket * client ) {
-   char a[ BUFSIZE ];
+	char a[ BUFSIZE ];
 
-   client->Read( a, BUFSIZE );	// Read a string from client, data will be limited by BUFSIZE bytes
-   std::cout << "Server received: " << a << std::endl;
-   client->Write( a );		// Write it back to client, this is the mirror function
-   client->Close();		// Close socket in parent
-
+	client->Read( a, BUFSIZE );	// Read a string from client, data will be limited by BUFSIZE bytes
+	std::cout << "Server received: " << a << std::endl;
+	client->Write( a );		// Write it back to client, this is the mirror function
+	client->Close();		// Close socket in parent
 }
 
 
@@ -40,18 +39,27 @@ void task( VSocket * client ) {
  *
  **/
 int main( int argc, char ** argv ) {
-   std::thread * worker;
-   VSocket * s1, * client;
+	printf("HOLA");
+	std::thread * worker;
+	VSocket * s1, * client;
 
-   s1 = new Socket( 's' );
+	s1 = new Socket( 's' );
 
-   s1->Bind( PORT );		// Port to access this mirror server
-   s1->Listen( 5 );		// Set backlog queue to 5 connections
+	if (!s1) {
+		perror("Failed to create socket");
+		exit(1);
+	}
 
-   for( ; ; ) {
-      client = s1->Accept();	 	// Wait for a client connection
-      worker = new std::thread( task, client );
-   }
+	// Port to access this mirror server
+	if (s1->Bind(PORT) < 0) {
+		perror("Bind failed");
+		exit(1);
+   	}
+	
+	s1->Listen( 5 );		// Set backlog queue to 5 connections
 
+	for( ; ; ) {
+		client = s1->Accept();	 	// Wait for a client connection
+		worker = new std::thread( task, client );
+	}
 }
-
