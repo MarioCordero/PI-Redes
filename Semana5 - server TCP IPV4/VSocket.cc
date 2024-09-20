@@ -60,11 +60,13 @@ void VSocket::CreateVSocket( char t, bool IPv6 ) {
     // Now, create the socket using the Linux library
     this->idSocket = socket(domain, type, protocol);
 
+    //printf("ID Socket: %d \n" , this->idSocket);
     // Check if there's an error
     if (this->idSocket == -1) {
         std::cerr << "Error creating socket: " << strerror(errno) << std::endl;
         throw std::runtime_error("Problem Creating Vsocket...");
     }
+    //std::cout << "TERMINA BIEN el VSocket" << std::endl;
 }
 
 //Creates just a socketID
@@ -123,15 +125,29 @@ int VSocket::MakeConnection( const char * hostip, int port ) {
             memset( &host6, 0, sizeof( host6 ) );
             host6.sin6_family = AF_INET6;
             st = inet_pton( AF_INET6, hostip, &host6.sin6_addr );
-            if ( 0 <= st ) {	// 0 means invalid address, -1 means address error
-               throw std::runtime_error( "Socket::Connect( const char *, int ) [inet_pton]" );
+            //printf("ESTOY EN MakeConnection( const char * hostip, int port )");
+            if ( st <= 0 ) {	// 0 means invalid address, -1 means address error
+                throw std::runtime_error( "Socket::Connect( const char *, int ) [inet_pton]" );
             }
+
             host6.sin6_port = htons( port );
+
             ha = (struct sockaddr *) &host6;
+
             socklen_t len = sizeof( host6 );
+
             st = connect( this->idSocket, ha, len );
             if ( -1 == st ) {
-               throw std::runtime_error( "Socket::Connect( const char *, int ) [connect]" );
+                char addr_str[INET6_ADDRSTRLEN]; // Buffer para la dirección
+                if (inet_ntop(AF_INET6, &host6.sin6_addr, addr_str, sizeof(addr_str)) != NULL) {
+                    printf("Dirección IPv6: %s\n", addr_str);
+                } else {
+                    perror("inet_ntop error");
+                }
+                printf("Tamaño de host6: %zu bytes\n", (size_t)len);
+                printf("ID SOCKET: %d", this->idSocket);
+                //printf("Estado de ST: %d \n",st);
+                throw std::runtime_error( "Socket::Connect( const char *, int ) [connect]" );
             }
 
         }else{
@@ -188,6 +204,7 @@ int VSocket::MakeConnection( const char * hostip, int port ) {
  **/
 int VSocket::MakeConnection( const char * host, const char * service){
 
+
     int st;
     
     struct addrinfo hints, *result, *rp;
@@ -204,10 +221,24 @@ int VSocket::MakeConnection( const char * host, const char * service){
 
     st = getaddrinfo( host, service, &hints, &result );
 
-    for ( rp = result; rp; rp = rp->ai_next ) {
-        st = connect( idSocket, rp->ai_addr, rp->ai_addrlen );
-        if ( 0 == st )
-        break;
+    for (rp = result; rp; rp = rp->ai_next) {
+        // Imprimir dirección IP
+        char addr_str[INET6_ADDRSTRLEN]; // Buffer para la dirección IP
+
+        if (rp->ai_family == AF_INET) { // IPv4
+            struct sockaddr_in *addr = (struct sockaddr_in *)rp->ai_addr;
+            inet_ntop(AF_INET, &(addr->sin_addr), addr_str, sizeof(addr_str));
+            printf("Conectando a IPv4: %s:%d\n", addr_str, ntohs(addr->sin_port));
+        } else if (rp->ai_family == AF_INET6) { // IPv6
+            struct sockaddr_in6 *addr = (struct sockaddr_in6 *)rp->ai_addr;
+            inet_ntop(AF_INET6, &(addr->sin6_addr), addr_str, sizeof(addr_str));
+            printf("Conectando a IPv6: %s:%d\n", addr_str, ntohs(addr->sin6_port));
+        }
+
+        st = connect(idSocket, rp->ai_addr, rp->ai_addrlen);
+        if (0 == st) {
+            break; // Conexión exitosa
+        }
     }
 
     freeaddrinfo( result );
@@ -257,14 +288,22 @@ int VSocket::Bind( int port ) {
         memset(&host6, 0, sizeof(host6)); // Zero out the structure
 
         host6.sin6_family = AF_INET6; // IPv6
-        host6.sin6_addr = in6addr_any; // Bind to any address
+
+        host6.sin6_addr = in6addr_any; // Bind to any address local or any
+
         host6.sin6_port = htons(port); // Convert port number to network byte order
 
-        // Bind the socket to the address
+        // Imprimir datos de la conexión IPv6
+        char addr_str[INET6_ADDRSTRLEN]; // Buffer para la dirección IP
+        inet_ntop(AF_INET6, &host6.sin6_addr, addr_str, sizeof(addr_str));
+        printf("Binding to IPv6: %s:%d\n", addr_str, ntohs(host6.sin6_port));
+
         st = bind(idSocket, (const sockaddr *)&host6, sizeof(host6));
 
     }else{
         struct sockaddr_in host4;
+
+        memset(host4.sin_zero, '\0', sizeof (host4.sin_zero));
 
         host4.sin_family = AF_INET;
 
@@ -272,7 +311,8 @@ int VSocket::Bind( int port ) {
 
         host4.sin_port = htons( port );
 
-        memset(host4.sin_zero, '\0', sizeof (host4.sin_zero));
+        //Imprimir datos
+        printf("Binding to IPv4: %s:%d\n", "0.0.0.0", ntohs(host4.sin_port));
 
         st = bind( idSocket, (const sockaddr *) &host4 , sizeof( host4 ));
 

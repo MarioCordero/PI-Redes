@@ -23,7 +23,8 @@ int main( int argc, char **argv ) {
 
 	// Create a new stream IPv4 socket
 	try {
-		s = new Socket('s');  
+		// s = new Socket('s'); // (IPv4)
+		s = new Socket('s', true); // (IPv6)
 	} catch (const std::runtime_error &e) {
 		fprintf(stderr, "Error creating socket: %s\n", e.what());
 		return -1;
@@ -34,8 +35,11 @@ int main( int argc, char **argv ) {
 
 	// Connect to the server
 	try {
-		//La IP de mi casa :D
-		s->Connect("192.168.0.8", PORT);  // Same port as server
+		//La IP de mi casa :D 	IPv4 192.168.0.8
+		//La IP del lab :D 		IPv6 fe80::f386:f20e:a32:a4e1
+
+		// s->Connect("<IP><intefaz>", PORT);  // Same port as server (IPv4)
+		s->Connect("fe80::f386:f20e:a32:a4e1%enp0s31f6", "5678");  // Same port as server (IPv6), use "" on the second param
 	} catch (const std::runtime_error &e) {
 		fprintf(stderr, "Error connecting to server: %s\n", e.what());
 		delete s;

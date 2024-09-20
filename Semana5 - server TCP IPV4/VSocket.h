@@ -13,7 +13,7 @@
 #ifndef VSocket_h
 #define VSocket_h
 #include <string>
- 
+
 class VSocket {
 	public:
 		void CreateVSocket( char, bool=false );
@@ -43,7 +43,7 @@ class VSocket {
 		int idSocket;	// Socket identifier
 		bool IPv6;		// Is IPv6 socket?
 		int port;		// Socket associated port
-		
+
 };
 
 #endif // VSocket_h

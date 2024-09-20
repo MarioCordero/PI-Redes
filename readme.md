@@ -31,6 +31,11 @@ En esta carpeta habrán varias carpetas con los trabajos asignados para el curso
   
    En esta carpeta estrá la evidencia de construir un certificado auto-firmado.
 
+- **Semana5 -**
+  
+   ip address, nc -6 fe80::f386:f20e:a32:a4e1%enp0s31f6, curl [fe80::f386:f20e:a32:a4e1%enp0s31f6]:5678
+   En esta carpeta estrá la evidencia de construir un certificado auto-firmado.
+
 ## Uso
 
 **Ejecutar el Programa**

@@ -43,7 +43,8 @@ int main( int argc, char ** argv ) {
 	std::thread * worker;
 	VSocket * s1, * client;
 
-	s1 = new Socket( 's' );
+	// s1 = new Socket( 's' ); // IPv4
+	s1 = new Socket( 's' , true );
 
 	if (!s1) {
 		perror("Failed to create socket");

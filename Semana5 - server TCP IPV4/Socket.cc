@@ -68,13 +68,14 @@ Socket::~Socket(){
   *
  **/
 int Socket::Connect( const char * host, int port ) {
-
+   printf("PORT: %d \n", port);
    return this->MakeConnection( host, port );
 
 }
 
 int Socket::Connect( const char * server, const char * service ) {
 
+   printf("Entra al connect IPv6. \n");
    return this->MakeConnection( server, service );
    
 }
@@ -91,6 +92,7 @@ int Socket::Connect( const char * server, const char * service ) {
 size_t Socket::Read( void * text, size_t size ) {
    int st = -1;
 
+   printf("First char readed: %c\n", const_cast<void*>(text));
    ssize_t hola = read( this->idSocket , const_cast<void*>(text) , size);
 
    st = hola;
@@ -112,10 +114,12 @@ size_t Socket::Read( void * text, size_t size ) {
   * @param	size_t size: buffer capacity, number of bytes to write
   *
  **/
-size_t Socket::Write( const void *text, size_t size ) {
+size_t Socket::Write( void *text, size_t size ) {
    int st = -1;
 
-   ssize_t wrintingTwo = write( this->idSocket , text, size);
+   printf("First char writed: %c\n", const_cast<void*>(text));
+
+   ssize_t wrintingTwo = write( this->idSocket , const_cast<void*>(text), size);
 
    st = wrintingTwo;
 

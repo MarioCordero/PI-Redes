@@ -22,7 +22,8 @@ int main( int argc, char ** argv ) {
 	int childpid;
 	char a[ BUFSIZE ];
 
-	s1 = new Socket('s');
+	// s1 = new Socket('s'); // IPv4
+	s1 = new Socket('s', true); //IPv6
 	if (!s1) {
 		perror("Failed to create socket");
 		exit(1);
@@ -42,11 +43,13 @@ int main( int argc, char ** argv ) {
 			perror( "server: fork error" );
 		} else {
 			if (0 == childpid) {		// child code
-			s1->Close();			// Close original socket "s1" in child
-			memset( a, 0, BUFSIZE );
-			s2->Read( a, BUFSIZE );	// Read a string from client using new conection info
-			s2->Write( a );		// Write it back to client, this is the mirror function
-			exit( 0 );			// Exit, finish child work
+				s1->Close();			// Close original socket "s1" in child
+				memset( a, 0, BUFSIZE );
+				s2->Read( a, BUFSIZE );	// Read a string from client using new conection info
+				//Error aca
+				s2->Write( a );		// Write it back to client, this is the mirror function
+				//Error aca
+				exit( 0 );			// Exit, finish child work
 			}
 		}
 		s2->Close();			// Close socket s2 in parent, then go wait for a new conection
