@@ -21,35 +21,74 @@ int main( int argc, char **argv ) {
 	VSocket *s;
 	char buffer[BUFSIZE];
 
-	// Create a new stream IPv4 socket
-	try {
-		// s = new Socket('s'); // (IPv4)
-		s = new Socket('s', true); // (IPv6)
-	} catch (const std::runtime_error &e) {
-		fprintf(stderr, "Error creating socket: %s\n", e.what());
-		return -1;
-	}
 
-	// Zero-fill buffer
-	memset(buffer, 0, BUFSIZE);
+	bool isIPv6 = true;  // Default IPv6
 
-	// Connect to the server
-	try {
-		//La IP de mi casa :D 	IPv4 192.168.0.8
-		//La IP del lab :D 		IPv6 fe80::f386:f20e:a32:a4e1
+	//La IP de mi casa :D 	IPv4 192.168.0.8
+	//La IP de mi casa :D 	IPv6 fe80::ac5:edd1:a51d:e7a9%eno1
+		// Tener en cuenta que para el IPv6 debe correr `ip address` para verificar su direccion IPv6 y la interfaz usada, en mi caso es la configuracion anteriormente mostrada
+	
+	char * IPv4 = "192.168.0.8";
+	char * IPv6 = "fe80::ac5:edd1:a51d:e7a9%eno1";
 
-		// s->Connect("<IP><intefaz>", PORT);  // Same port as server (IPv4)
-		s->Connect("fe80::f386:f20e:a32:a4e1%enp0s31f6", "5678");  // Same port as server (IPv6), use "" on the second param
-	} catch (const std::runtime_error &e) {
-		fprintf(stderr, "Error connecting to server: %s\n", e.what());
-		delete s;
-		return -1;
+	// Verify the argument to choose IPv4 o IPv6
+	if (argc > 1) {
+		if (strcmp(argv[1], "ipv4") == 0) {
+
+			isIPv6 = false;  // Use IPv4
+			try {
+				s = new Socket('s'); // Create a socket IPv4
+			} catch (const std::runtime_error &e) {
+				fprintf(stderr, "Error creating socket: %s\n", e.what());
+				return -1;
+			}
+
+			memset(buffer, 0, BUFSIZE);
+
+			// Connect to the server
+			try {
+				s->Connect( IPv4 , PORT);
+			} catch (const std::runtime_error &e) {
+				fprintf(stderr, "Error connecting to server: %s\n", e.what());
+				delete s;
+				return -1;
+			}
+
+		} else if (strcmp(argv[1], "ipv6") == 0) {
+		
+			isIPv6 = true;  // Use IPv6
+			try {
+				s = new Socket('s', "5678"); //Create a socket IPv6
+			} catch (const std::runtime_error &e) {
+				fprintf(stderr, "Error creating socket: %s\n", e.what());
+				return -1;
+			}
+
+			memset(buffer, 0, BUFSIZE);
+
+			try {
+				s->Connect( IPv6 , "5678");  // Same port as server (IPv6), use "" on the second param
+			} catch (const std::runtime_error &e) {
+				fprintf(stderr, "Error connecting to server: %s\n", e.what());
+				delete s;
+				return -1;
+			}
+		
+		} else {
+		
+			fprintf(stderr, "Uso: %s [ipv4|ipv6]\n", argv[0]);
+			exit(1);
+		
+		}
+	}else{
+		fprintf(stderr, "Uso: %s [ipv4|ipv6]\n", argv[0]);
+		exit(1);
 	}
 
 	// Send message to server
 	try {
-		if (argc > 1) {
-			s->Write(argv[1]);  // Send first program argument to server
+		if (argc > 2) {
+			s->Write(argv[2]);  // Send second program argument to server
 		} else {
 			s->Write("Hello world 2024 ...");
 		}

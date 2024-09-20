@@ -35,8 +35,8 @@ class VSocket {
 		virtual int Connect( const char *, int ) = 0;
 		virtual int Connect( const char *, const char * ) = 0;
 		virtual size_t Read( void *, size_t ) = 0;
-		virtual size_t Write( const void *, size_t ) = 0;
-		virtual size_t Write( const char * ) = 0;
+		virtual size_t Write( void *, size_t ) = 0;
+		virtual size_t Write( char * ) = 0;
 		virtual VSocket * Accept() = 0; //NEW
 
 	protected:

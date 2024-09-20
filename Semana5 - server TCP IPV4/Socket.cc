@@ -75,7 +75,7 @@ int Socket::Connect( const char * host, int port ) {
 
 int Socket::Connect( const char * server, const char * service ) {
 
-   printf("Entra al connect IPv6. \n");
+   //printf("Entra al connect IPv6. \n");
    return this->MakeConnection( server, service );
    
 }
@@ -89,20 +89,25 @@ int Socket::Connect( const char * server, const char * service ) {
   * @param	int size: buffer capacity, read will stop if buffer is full
   *
  **/
-size_t Socket::Read( void * text, size_t size ) {
+size_t Socket::Read(void *text, size_t size) {
    int st = -1;
 
-   printf("First char readed: %c\n", const_cast<void*>(text));
-   ssize_t hola = read( this->idSocket , const_cast<void*>(text) , size);
+   // // Cast the void* to char* to print the content as characters
+   // char* charText = static_cast<char*>(text);
 
-   st = hola;
+   // // Print size and the first character (before reading)
+   // printf("Buffer size: %zu, First char before reading: %c\n", size, charText[0]);
 
-   if ( -1 == st ) {
-      throw std::runtime_error( "Socket::Read( const void *, size_t )" );
+   st = read(this->idSocket, text, size);
+
+   if (st == -1) {
+      throw std::runtime_error("Socket::Read( const void *, size_t )");
    }
 
-   return st;
+   // Print what was read (if any)
+   // printf("Data read: %.*s\n", st, charText); // Use %.*s to print the exact number of bytes read
 
+   return st;
 }
 
 
@@ -114,21 +119,22 @@ size_t Socket::Read( void * text, size_t size ) {
   * @param	size_t size: buffer capacity, number of bytes to write
   *
  **/
-size_t Socket::Write( void *text, size_t size ) {
+size_t Socket::Write(void *text, size_t size) {
    int st = -1;
 
-   printf("First char writed: %c\n", const_cast<void*>(text));
+   // // Cast the void* to char* to print the content as characters
+   // char* charText = static_cast<char*>(text);
 
-   ssize_t wrintingTwo = write( this->idSocket , const_cast<void*>(text), size);
+   // // Print the buffer and size before writing
+   // printf("Buffer size: %zu, Data to write: %.*s\n", size, (int)size, charText);
 
-   st = wrintingTwo;
+   st = write(this->idSocket, text, size);
 
-   if ( -1 == st ) {
-      throw std::runtime_error( "Socket::Write( void *, size_t )" );
+   if (st == -1) {
+      throw std::runtime_error("Socket::Write( void *, size_t )");
    }
 
    return st;
-
 }
 
 
@@ -140,19 +146,17 @@ size_t Socket::Write( void *text, size_t size ) {
   *  This method write a string to socket, use strlen to determine how many bytes
   *
  **/
-size_t Socket::Write( const char *text ) {
+size_t Socket::Write(char *text) {
    int st = -1;
 
-   ssize_t writing = Write( text , strlen(text));
+   // Use the other Write method
+   st = Write(text, strlen(text));
 
-   st = writing;
-
-   if ( -1 == st ) {
-      throw std::runtime_error( "Socket::Write( void *, size_t )" );
+   if (st == -1) {
+      throw std::runtime_error("Socket::Write( void *, size_t )");
    }
 
    return st;
-
 }
 
 /**

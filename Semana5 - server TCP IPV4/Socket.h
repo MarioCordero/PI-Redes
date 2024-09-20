@@ -28,8 +28,8 @@ class Socket : public VSocket {
       int Connect( const char *, int );
       int Connect( const char *, const char * );
       size_t Read( void *, size_t );
-      size_t Write( const void *, size_t );
-      size_t Write( const char * );
+      size_t Write( void *, size_t );
+      size_t Write( char * );
       Socket * Accept();
 
    protected:

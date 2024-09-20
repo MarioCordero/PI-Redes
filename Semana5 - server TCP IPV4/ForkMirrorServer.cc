@@ -22,8 +22,31 @@ int main( int argc, char ** argv ) {
 	int childpid;
 	char a[ BUFSIZE ];
 
-	// s1 = new Socket('s'); // IPv4
-	s1 = new Socket('s', true); //IPv6
+	bool isIPv6 = true;  // Default IPv6
+
+	// Verify the argument to choose IPv4 o IPv6
+	if (argc > 1) {
+		if (strcmp(argv[1], "ipv4") == 0) {
+
+			isIPv6 = false;  // Use IPv4
+			s1 = new Socket('s'); // Create a socket IPv4
+		
+		} else if (strcmp(argv[1], "ipv6") == 0) {
+		
+			isIPv6 = true;  // Use IPv6
+			s1 = new Socket('s', "5678"); //Create a socket IPv6
+		
+		} else {
+		
+			fprintf(stderr, "Uso: %s [ipv4|ipv6]\n", argv[0]);
+			exit(1);
+		
+		}
+	}else{
+		fprintf(stderr, "Uso: %s [ipv4|ipv6]\n", argv[0]);
+		exit(1);
+	}
+	
 	if (!s1) {
 		perror("Failed to create socket");
 		exit(1);
@@ -46,9 +69,8 @@ int main( int argc, char ** argv ) {
 				s1->Close();			// Close original socket "s1" in child
 				memset( a, 0, BUFSIZE );
 				s2->Read( a, BUFSIZE );	// Read a string from client using new conection info
-				//Error aca
+				printf("Mensaje recibido del cliente: %s\n", a);
 				s2->Write( a );		// Write it back to client, this is the mirror function
-				//Error aca
 				exit( 0 );			// Exit, finish child work
 			}
 		}

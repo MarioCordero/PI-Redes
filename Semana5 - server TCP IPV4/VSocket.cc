@@ -228,11 +228,11 @@ int VSocket::MakeConnection( const char * host, const char * service){
         if (rp->ai_family == AF_INET) { // IPv4
             struct sockaddr_in *addr = (struct sockaddr_in *)rp->ai_addr;
             inet_ntop(AF_INET, &(addr->sin_addr), addr_str, sizeof(addr_str));
-            printf("Conectando a IPv4: %s:%d\n", addr_str, ntohs(addr->sin_port));
+            //printf("Conectando a IPv4: %s:%d\n", addr_str, ntohs(addr->sin_port));
         } else if (rp->ai_family == AF_INET6) { // IPv6
             struct sockaddr_in6 *addr = (struct sockaddr_in6 *)rp->ai_addr;
             inet_ntop(AF_INET6, &(addr->sin6_addr), addr_str, sizeof(addr_str));
-            printf("Conectando a IPv6: %s:%d\n", addr_str, ntohs(addr->sin6_port));
+            //printf("Conectando a IPv6: %s:%d\n", addr_str, ntohs(addr->sin6_port));
         }
 
         st = connect(idSocket, rp->ai_addr, rp->ai_addrlen);

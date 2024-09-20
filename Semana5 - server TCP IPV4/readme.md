@@ -73,11 +73,40 @@
 
     - También el servidor con hilos `ThreadMirrorServer.cc` debe funcionar correctamente con el cliente `MirrorClient.cc`
 
-   - ## Ejecución
-     - IPv4
-        ```bash
-        make tcp-cli.out
-        ```
+   - ## Ejecución IPv4
+   - Revisar el codigo para hacer los cambios correspondientes de las IP para que funcione en el equipo que se vaya a utilizar
+     - ForkMirrorServer
+       - En una terminal
+          ```bash
+          make ForkMirrorServer.out 
+          ```
+          ```bash
+          ./ForkMirrorServer.out ipv4
+          ```
+       - En otra terminal distinta
+          ```bash
+          make MirrorClient.out 
+          ```
+          Tambien se puede no enviar mensaje, en ese caso se enviará un mensaje predeterminado
+          ```bash
+          ./MirrorClient.out ipv4 <Mensaje a enviar>
+          ```
+     - ThreadMirrorServer
+       - En una terminal
+          ```bash
+          make ThreadMirrorServer.out 
+          ```
+          ```bash
+          ./ThreadMirrorServer.out ipv4
+          ```
+       - En otra terminal distinta
+          ```bash
+          make MirrorClient.out 
+          ```
+          Tambien se puede no enviar mensaje, en ese caso se enviará un mensaje predeterminado
+          ```bash
+          ./MirrorClient.out ipv4 <Mensaje a enviar>
+          ```
 
 - ## Notas
 	- Si la Address ya está en uso, correr:
@@ -93,6 +122,41 @@
   - ## Descripción 
 
     -   Completar la funcionalidad de servidor para TCP IPv6, tanto para procesos como hilos
+
+   - ## Ejecución IPv6
+   - Revisar el codigo para hacer los cambios correspondientes de las IP para que funcione en el equipo que se vaya a utilizar
+     - ForkMirrorServer
+       - En una terminal
+          ```bash
+          make ForkMirrorServer.out 
+          ```
+          ```bash
+          ./ForkMirrorServer.out ipv6
+          ```
+       - En otra terminal distinta
+          ```bash
+          make MirrorClient.out 
+          ```
+          Tambien se puede no enviar mensaje, en ese caso se enviará un mensaje predeterminado
+          ```bash
+          ./MirrorClient.out ipv6 <Mensaje a enviar>
+          ```
+     - ThreadMirrorServer
+       - En una terminal
+          ```bash
+          make ThreadMirrorServer.out 
+          ```
+          ```bash
+          ./ThreadMirrorServer.out ipv6
+          ```
+       - En otra terminal distinta
+          ```bash
+          make MirrorClient.out 
+          ```
+          Tambien se puede no enviar mensaje, en ese caso se enviará un mensaje predeterminado
+          ```bash
+          ./MirrorClient.out ipv6 <Mensaje a enviar>
+          ```
 
 # Referencias
 
