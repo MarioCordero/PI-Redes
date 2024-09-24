@@ -94,24 +94,24 @@ void Servlet(SSL* ssl) /* Serve the connection -- threadable */
     char buf[ 1024 ] = { 0 };
     int sd, bytes;
     const char* ServerResponse="\n<Body>\n\
-\t<Server>os.ecci.ucr.ac.cr</Server>\n\
-\t<dir>ci0123</dir>\n\
-\t<Name>Proyecto Integrador Redes y sistemas Operativos</Name>\n\
-\t<NickName>PIRO</NickName>\n\
-\t<Description>Consolidar e integrar los conocimientos de redes y sistemas operativos</Description>\n\
-\t<Author>profesores PIRO</Author>\n\
-</Body>\n";
+                              \t<Server>os.ecci.ucr.ac.cr</Server>\n\
+                              \t<dir>ci0123</dir>\n\
+                              \t<Name>Proyecto Integrador Redes y sistemas Operativos</Name>\n\
+                              \t<NickName>PIRO</NickName>\n\
+                              \t<Description>Consolidar e integrar los conocimientos de redes y sistemas operativos</Description>\n\
+                              \t<Author>profesores PIRO</Author>\n\
+                              </Body>\n";
     const char *validMessage = "\n<Body>\n\
-\t<UserName>piro</UserName>\n\
-\t<Password>ci0123</Password>\n\
-</Body>\n";
+                              \t<UserName>piro</UserName>\n\
+                              \t<Password>ci0123</Password>\n\
+                              </Body>\n";
     if ( SSL_accept(ssl) == FAIL ) {    /* do SSL-protocol accept */
         ERR_print_errors_fp( stderr );
     } else {
        ShowCerts(ssl);        /* get any certificates */
        bytes = SSL_read( ssl, buf, sizeof( buf ) ); /* get request */
        buf[bytes] = '\0';
-       printf( "Client msg: \"%s\"\n", buf );
+       printf( "Client msg:\n \"%s\"\n", buf );
        if ( bytes > 0 ) {
           if ( ! strcmp( validMessage, buf ) ) {
              SSL_write( ssl, ServerResponse, strlen( ServerResponse ) );
@@ -144,6 +144,7 @@ int main( int cuantos, char ** argumentos ) {
    LoadCertificates(ctx, "ci0123.pem", "ci0123.pem"); /* load certs */
    server = OpenListener( atoi( portnum ) );    /* create server socket */
    while (1) {
+      printf("\n");
       struct sockaddr_in addr;
       socklen_t len = sizeof( addr );
       SSL * ssl;

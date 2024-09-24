@@ -229,6 +229,9 @@
          }
       ```
 
+sudo cp ci0123.pem /etc/ssl/certs/
+sudo cp ci0123.pem /etc/ssl/private/ci0123.key
+
 # Referencias
    - Los ejemplos provistos "SSLClient.cc" y "SSLServer.cc" deben funcionar correctamente, requieren que un certificado haya sido creado por medio de openssl y almacenado en un archivo "ci0123.pem"
 

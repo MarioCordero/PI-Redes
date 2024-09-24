@@ -10,6 +10,10 @@
 #include <openssl/err.h>
 #define FAIL    -1
 
+// Debian
+// sudo apt install libssl-dev
+// IP 192.168.239.191
+
 int OpenConnection(const char *hostname, int port) {
     int sd;
     struct hostent *host;
@@ -95,7 +99,8 @@ int main(int count, char *strings[])
     {
         char acUsername[16] = {0};
         char acPassword[16] = {0};
-        const char *cpRequestMessage = "\n<Body>\n\
+        const char *cpRequestMessage = 
+"\n<Body>\n\
 \t<UserName>%s</UserName>\n\
 \t<Password>%s</Password>\n\
 </Body>\n";
