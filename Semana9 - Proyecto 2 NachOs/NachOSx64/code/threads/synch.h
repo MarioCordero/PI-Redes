@@ -44,8 +44,8 @@ class Semaphore {
     int getValue() { return value; }
     void Destroy();
     
-    void P();	 // these are the only operations on a semaphore
-    void V();	 // they are both *atomic*
+    void P();	 // these are the only operations on a semaphore, is for wait
+    void V();	 // they are both *atomic*, is for signal (operación que se utiliza para liberar el semáforo y permitir que otros hilos continúen su ejecución.)
     
   private:
     char* name;			// useful for debugging
@@ -70,16 +70,20 @@ class Lock {
     Lock(const char* debugName);  		// initialize lock to be FREE
     ~Lock();				// deallocate lock
     char* getName() { return name; }	// debugging assist
-
     void Acquire(); // these are the only operations on a lock
     void Release(); // they are both *atomic*
-
     bool isHeldByCurrentThread();	// true if the current thread
 					// holds this lock.  Useful for
 					// checking in Release, and in
 					// Condition variable ops below.
+    Semaphore* GetSemaphore() const { // Getter para semáforo
+        return semaforo;
+    }
 
   private:
+    bool free;
+    Thread * mio;
+    Semaphore * semaforo = 0;
     char* name;				// for debugging
     // plus some other stuff you'll need to define
 };

@@ -133,21 +133,32 @@ Lock::~Lock() {
 
 
 void Lock::Acquire() {
-
+    if(this->free){
+        this->semaforo->P(); // Wait
+    }
+    this->free = false;
+    this->mio = currentThread;
 }
 
 
 void Lock::Release() {
-
+    if (this->mio != currentThread) { // Manejo de error: el hilo actual no posee el lock
+        return;
+    }
+    this->free = true;
+    this->mio = NULL;
+    this->semaforo->V(); // Free the semaphore
 }
 
 
 bool Lock::isHeldByCurrentThread() {
-   return false;
+   return this->mio == currentThread;
 }
 
 
 Condition::Condition(const char* debugName) {
+    Semaphore * semaphore = 0;
+    this->Wait(Lock * L);
 
 }
 
@@ -168,6 +179,10 @@ void Condition::Signal( Lock * conditionLock ) {
 
 
 void Condition::Broadcast( Lock * conditionLock ) {
+    while (conditionLock->GetSemaphore()->getValue() != 0) {
+        /* code */
+    }
+    
 }
 
 
