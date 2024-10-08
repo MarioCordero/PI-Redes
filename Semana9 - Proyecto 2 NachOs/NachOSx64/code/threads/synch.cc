@@ -180,9 +180,8 @@ void Condition::Signal( Lock * conditionLock ) {
 
 void Condition::Broadcast( Lock * conditionLock ) {
     while (conditionLock->GetSemaphore()->getValue() != 0) {
-        /* code */
+        
     }
-    
 }
 
 
