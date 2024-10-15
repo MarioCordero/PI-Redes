@@ -229,7 +229,25 @@
          }
       ```
 
+   - ## Ejecución Demo (archivos.c)
+      - En una terminal
+         ```bash
+         make SSLServerDemo.out
+         ```
+         ```bash
+         ./SSLServerDemo.out 1234 #Se usará el puerto 1234, por ejemplo
+         ```
+
+      - En otra terminal distinta
+         ```bash
+         make SSLClientDemo.out 
+         ```
+         ```bash
+         ./SSLClientDemo.out <hostname> <portnum> #Usar como hostname su IP, se usará el mismo puerto 1234 del servidor
+         ```
+
 sudo cp ci0123.pem /etc/ssl/certs/
+
 sudo cp ci0123.pem /etc/ssl/private/ci0123.key
 
 # Referencias
