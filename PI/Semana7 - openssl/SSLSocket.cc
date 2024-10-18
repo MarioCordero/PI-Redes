@@ -18,47 +18,30 @@ SSLSocket::~SSLSocket() {
 
 // Initializes SSL context for server-side
 void SSLSocket::SSLInitServer(const char* certFile, const char* keyFile) {
-    SSL_library_init(); // Initialize SSL library
-    OpenSSL_add_all_algorithms(); // Load encryption & hash algorithms
-    SSL_load_error_strings(); // Load error strings
+    SSL_load_error_strings();
+    OpenSSL_add_ssl_algorithms();
 
-    // Create SSL context for server
-    sslContext = SSL_CTX_new(TLS_server_method()); 
+    sslContext = SSL_CTX_new(SSLv23_server_method());
     if (!sslContext) {
-        throw std::runtime_error("Failed to create SSL context.");
+        ERR_print_errors_fp(stderr);
+        throw std::runtime_error("Unable to create SSL context");
     }
 
-    // Load certificate and private key files
-    if (SSL_CTX_use_certificate_file(sslContext, certFile, SSL_FILETYPE_PEM) <= 0) {
-        throw std::runtime_error("Failed to load SSL certificate.");
-    }
-
-    if (SSL_CTX_use_PrivateKey_file(sslContext, keyFile, SSL_FILETYPE_PEM) <= 0) {
-        throw std::runtime_error("Failed to load SSL private key.");
-    }
-
-    if (!SSL_CTX_check_private_key(sslContext)) {
-        throw std::runtime_error("Private key does not match the public certificate.");
+    // Load the certificate and private key files
+    if (SSL_CTX_use_certificate_file(sslContext, certFile, SSL_FILETYPE_PEM) <= 0 ||
+        SSL_CTX_use_PrivateKey_file(sslContext, keyFile, SSL_FILETYPE_PEM) <= 0) {
+        ERR_print_errors_fp(stderr);
+        throw std::runtime_error("Error setting up SSL certificate or private key");
     }
 }
 
 // Create SSL object for the server socket
-void SSLSocket::SSLCreate(Socket* serverSocket) {
-    ssl = SSL_new(sslContext); // Create new SSL structure
+void SSLSocket::SSLCreate(SSLSocket* serverSocket) {
+    ssl = SSL_new(serverSocket->sslContext);
     if (!ssl) {
-        throw std::runtime_error("Failed to create SSL object.");
+        throw std::runtime_error("Failed to create SSL object");
     }
-
-    // Bind SSL object to the underlying socket
-    SSL_set_fd(ssl, serverSocket->getSocketDescriptor()); // Assuming `getSocketDescriptor()` is a method returning socket fd
-}
-
-void SSLSocket::CopyContext(SSLSocket* server) {
-    // Copy the SSL context from the server to this client
-    if (server->sslContext != nullptr) {
-        this->sslContext = server->sslContext;
-        SSL_CTX_up_ref(this->sslContext);  // Increase reference count to avoid premature deallocation
-    }
+    SSL_set_fd(ssl, idSocket);
 }
 
 // Accept SSL connection
@@ -139,59 +122,25 @@ void SSLSocket::SSLInit() {
 
 // Connects to server with SSL
 void SSLSocket::SSLConnect(char* hostname, int port) {
-    SSL_CTX *ctx;
-    SSL *ssl;
-
-    printf("\n\nThe host is %s and the port is %d\n\n", hostname, port);
-
-    // Initialize SSL
-    SSL_library_init();
-    SSL_load_error_strings();
-    OpenSSL_add_all_algorithms();
-
-    ctx = SSL_CTX_new(TLS_client_method());
-    if (!ctx) {
-        fprintf(stderr, "Unable to create SSL context\n");
-        ERR_print_errors_fp(stderr);
-        exit(EXIT_FAILURE);
+    // First establish a TCP connection to the server
+    if (this->Connect(hostname, port) < 0) {
+        throw std::runtime_error("Failed to connect to the server");
     }
 
-    ssl = SSL_new(ctx);
+    // Create a new SSL object for this connection
+    ssl = SSL_new(sslContext);
     if (!ssl) {
-        fprintf(stderr, "Unable to create SSL\n");
+        throw std::runtime_error("Failed to create SSL object");
+    }
+
+    // Bind the socket to the file descriptor
+    SSL_set_fd(ssl, idSocket);
+
+    // Perform the SSL connection (performs the SSL handshake)
+    if (SSL_connect(ssl) <= 0) {
         ERR_print_errors_fp(stderr);
-        exit(EXIT_FAILURE);
+        throw std::runtime_error("SSL_connect failed");
     }
-
-    // Use MakeConnection method from VSocket class
-    if (MakeConnection(hostname, port) < 0) {
-        fprintf(stderr, "Connection to server failed\n");
-        SSL_free(ssl);
-        SSL_CTX_free(ctx);
-        exit(EXIT_FAILURE);
-    }
-
-    // Associate the socket with the SSL structure
-    SSL_set_fd(ssl, idSocket); // Use the socket id from VSocket
-
-    // Perform the SSL handshake
-    if (SSL_connect(ssl) != 1) {
-        fprintf(stderr, "SSL connection failed\n");
-        ERR_print_errors_fp(stderr);
-        SSL_free(ssl);
-        SSL_CTX_free(ctx);
-        Close();
-        exit(EXIT_FAILURE);
-    }
-
-    printf("SSL connection established\n");
-
-    // Your further communication with the server goes here
-
-    // Clean up
-    SSL_free(ssl);
-    SSL_CTX_free(ctx);
-    Close(); // Close the socket
 }
 
 
@@ -212,10 +161,4 @@ void SSLSocket::LoadCertificates(const char* certFile, const char* keyFile) {
     if (!SSL_CTX_check_private_key(sslContext)) {
         throw std::runtime_error("Private key does not match the public certificate.");
     }
-}
-
-// Set username and password for SSL connection
-void SSLSocket::SSLSetCredentials(const char* user, const char* pass) {
-    username = user;
-    password = pass;
 }

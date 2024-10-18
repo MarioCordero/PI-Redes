@@ -10,6 +10,7 @@
 #include <cstdlib>	// atoi
 #include <cstdio>	// printf
 #include <cstring>	// strlen, strcmp
+#include <iostream>
 
 #include "SSLSocket.h"
 
@@ -61,12 +62,17 @@ int main( int cuantos, char ** argumentos ) {
 	server->Bind( port );
 	server->Listen( 10 );
 	server->SSLInitServer( "ci0123.pem", "ci0123.pem" );
-
-	printf("\nCLIENT %d",client->getSocketDescriptor());
+   	std::cout << "Starting server" << std::endl;
 	for( ; ; ) {
-		client = dynamic_cast<SSLSocket*>(server->Accept());
-		printf("\nCLIENT AFTER CAST %d",client->getSocketDescriptor());
-		client->CopyContext( server );
-		worker = new std::thread( Service, client );	// service connection
+
+		Socket* tempSocket = dynamic_cast<Socket*>(client);
+		if (tempSocket) {
+			tempSocket = server->Accept();
+			client->SSLCreate( server );
+			worker = new std::thread( Service, client );	// service connection
+			// Successfully cast, can now use sslSocket
+		} else {
+			std::cout<<"ERROR"<<std::endl;
+		}
 	}
 }

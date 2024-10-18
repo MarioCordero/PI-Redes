@@ -16,7 +16,7 @@ class SSLSocket : public Socket { // SSLSocket Class, inherits from Socket
 
         // Server-specific SSL methods
         void SSLInitServer(const char* certFile, const char* keyFile);
-        void SSLCreate(Socket* serverSocket);
+        void SSLCreate(SSLSocket* serverSocket);
         void SSLAccept();
 
         // SSL read/write methods
@@ -30,11 +30,9 @@ class SSLSocket : public Socket { // SSLSocket Class, inherits from Socket
         // SSL initialization for clients
         void SSLInit(); 
         void SSLConnect(char* hostname, int port);
-        void CopyContext(SSLSocket* server);
 
         // SSL certificate and key loading
         void LoadCertificates(const char* certFile, const char* keyFile);
-        void SSLSetCredentials(const char* username, const char* password);
 
         // SSL cleanup
         void SSLCleanup();

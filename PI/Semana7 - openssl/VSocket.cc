@@ -107,92 +107,47 @@ void VSocket::Close() {
   * @param      int port: process address, example 80
   *
  **/
-int VSocket::MakeConnection( const char * hostip, int port ) {
+int VSocket::MakeConnection(const char* hostname, int port) {
+    try {
+        // Resolve hostname or IP address using gethostbyname
+        struct hostent* host;
+        struct sockaddr_in hostAddr;
+        int socketFD;
 
-	//The structure of the connect Unix syscall 
-	//int connect(int sockfd, const struct sockaddr *addr,socklen_t addrlen);
-	//sockfd = sockID
-    try{
-        int st;
-
-        if(this->IPv6){
-            //------------------------------ IPv6 ------------------------------//
-
-            // Para IPv6 
-            struct sockaddr_in6  host6;
-            struct sockaddr * ha;
-
-            memset( &host6, 0, sizeof( host6 ) );
-            host6.sin6_family = AF_INET6;
-            st = inet_pton( AF_INET6, hostip, &host6.sin6_addr );
-            //printf("ESTOY EN MakeConnection( const char * hostip, int port )");
-            if ( st <= 0 ) {	// 0 means invalid address, -1 means address error
-                throw std::runtime_error( "Socket::Connect( const char *, int ) [inet_pton]" );
-            }
-
-            host6.sin6_port = htons( port );
-
-            ha = (struct sockaddr *) &host6;
-
-            socklen_t len = sizeof( host6 );
-
-            st = connect( this->idSocket, ha, len );
-            if ( -1 == st ) {
-                char addr_str[INET6_ADDRSTRLEN]; // Buffer para la dirección
-                if (inet_ntop(AF_INET6, &host6.sin6_addr, addr_str, sizeof(addr_str)) != NULL) {
-                    printf("Dirección IPv6: %s\n", addr_str);
-                } else {
-                    perror("inet_ntop error");
-                }
-                printf("Tamaño de host6: %zu bytes\n", (size_t)len);
-                printf("ID SOCKET: %d", this->idSocket);
-                //printf("Estado de ST: %d \n",st);
-                throw std::runtime_error( "Socket::Connect( const char *, int ) [connect]" );
-            }
-
-        }else{
-            //------------------------------ IPv4 ------------------------------//
-
-            //Define an addres for the host
-            //sockaddr_in is a struct on c/c++ that stores an IP and a port
-            struct sockaddr_in host4;
-
-            //void *memset(void *ptr, int value, size_t num);
-            //initialize the host4 structure in 0
-            memset( (char *)&host4 , 0 , sizeof( host4 ) );
-
-            //Type of direction using in the struct host4 (IPv4)
-            //sin_family
-            //Es un campo de la estructura sockaddr_in que especifica el tipo de direcciones que la estructura puede manejar.
-            host4.sin_family = AF_INET;
-
-            //This works jus to prove if we can stablish a connection with AF_INET and the port given
-            // Es una función de la biblioteca de sockets en C/C++ que convierte direcciones IP en formato de texto (como "192.168.1.1") a su formato binario en una estructura in_addr o in6_addr, dependiendo de si se está utilizando IPv4 o IPv6.
-            // inet_pton significa "Internet Presentation to Numeric".
-            st = inet_pton( AF_INET, hostip, &host4.sin_addr );
-
-            if ( -1 == st ) {
-                throw(std::runtime_error( "VSocket::DoConnect, inet_pton" ));
-            }
-
-            //La línea host4.sin_port = htons(port); se utiliza para asignar el número de puerto al campo sin_port de la estructura sockaddr_in, y convierte el número de puerto al formato de bytes adecuado para la red. Aquí te explico cada parte:
-
-            host4.sin_port = htons( port );
-
-            //Try the connection
-            st = connect( idSocket, (sockaddr *) &host4, sizeof( host4 ) );
-
-            if ( -1 == st ) {
-                throw(std::runtime_error( "VSocket::DoConnect, connect" ));
-            }
-
-            return st;
+        // Get host information
+        if ((host = gethostbyname(hostname)) == NULL) {
+            perror("Error resolving hostname");
+            return -1;  // or handle this error according to your needs
         }
 
-    }catch(const std::exception& e){
+        // Create the socket
+        socketFD = socket(AF_INET, SOCK_STREAM, 0);
+        if (socketFD < 0) {
+            perror("Error creating socket");
+            return -1;
+        }
 
-        std::cerr << '\n' << e.what() << '\n';
+        // Clear the sockaddr_in structure
+        memset(&hostAddr, 0, sizeof(hostAddr));
 
+        // Setup the sockaddr_in structure for IPv4
+        hostAddr.sin_family = AF_INET;
+        hostAddr.sin_port = htons(port);  // Set port in network byte order
+        hostAddr.sin_addr.s_addr = *(long*)(host->h_addr);  // Set the IP address from gethostbyname result
+
+        // Attempt to connect
+        if (connect(socketFD, (struct sockaddr*)&hostAddr, sizeof(hostAddr)) != 0) {
+            close(socketFD);
+            perror("Connection failed");
+            return -1;  // or handle this error according to your needs
+        }
+
+        // Return the file descriptor if the connection is successful
+        return socketFD;
+
+    } catch (const std::exception& e) {
+        std::cerr << "Exception occurred: " << e.what() << std::endl;
+        return -1;
     }
 }
 

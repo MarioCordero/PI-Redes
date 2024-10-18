@@ -11,6 +11,7 @@
 #include <cstdlib>
 #include <cstring>	// strlen
 #include <cstdio>
+#include <iostream>
 
 // #include "Socket.h"
 #include "SSLSocket.h"
@@ -42,6 +43,7 @@ int main(int cuantos, char * argumentos[] ) {
    portnum = argumentos[ 2 ];
    client->SSLInit();
    client->SSLConnect( hostname, atoi( portnum ) );
+   std::cout<<"LLEGO";
 
    // HERE
 
