@@ -256,7 +256,7 @@ int VSocket::MakeConnection( const char * host, const char * service){
 int VSocket::Listen( int queue ) {
 
     int st = -1;
-
+	
     st = listen(this->idSocket , queue);
 
     if ( -1 == st ) {
@@ -301,23 +301,20 @@ int VSocket::Bind( int port ) {
         st = bind(idSocket, (const sockaddr *)&host6, sizeof(host6));
 
     }else{
-        struct sockaddr_in host4;
+		struct sockaddr_in host4;
 
-        memset(host4.sin_zero, '\0', sizeof (host4.sin_zero));
+		memset(host4.sin_zero, '\0', sizeof (host4.sin_zero));
 
-        host4.sin_family = AF_INET;
+		host4.sin_family = AF_INET;
 
-        host4.sin_addr.s_addr = htonl( INADDR_ANY );
+		host4.sin_addr.s_addr = htonl( INADDR_ANY );
 
-        host4.sin_port = htons( port );
+		host4.sin_port = htons( port );
 
-        //Imprimir datos
-        printf("Binding to IPv4: %s:%d\n", "0.0.0.0", ntohs(host4.sin_port));
-
-        st = bind( idSocket, (const sockaddr *) &host4 , sizeof( host4 ));
-
-    }
-
+		//Imprimir datos
+		printf("Binding to IPv4: %s:%d\n", "0.0.0.0", ntohs(host4.sin_port));
+		st = bind( idSocket, (const sockaddr *) &host4 , sizeof( host4 ));
+	}
     return st;
 }
 

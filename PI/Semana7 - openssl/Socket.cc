@@ -21,6 +21,11 @@
 #include "Socket.h"
 #include <stdexcept>
 
+// Default constructor implementation
+Socket::Socket() : Socket('s', false) {
+    // Calls the stream (TCP) IPv4 constructor as default
+}
+
 /**
   *  Class constructor
   *     use Unix socket system call
@@ -78,6 +83,10 @@ int Socket::Connect( const char * server, const char * service ) {
    //printf("Entra al connect IPv6. \n");
    return this->MakeConnection( server, service );
    
+}
+
+int Socket::getSocketDescriptor() const {
+   return this->idSocket;
 }
 
 

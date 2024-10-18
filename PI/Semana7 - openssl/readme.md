@@ -246,6 +246,23 @@
          ./SSLClientDemo.out <hostname> <portnum> #Usar como hostname su IP, se usará el mismo puerto 1234 del servidor
          ```
 
+   - ## Ejecución (archivos.cc)
+      - En una terminal
+         ```bash
+         make SSLServer.out
+         ```
+         ```bash
+         ./SSLServer.out 1234 #Se usará el puerto 1234, por ejemplo
+         ```
+
+      - En otra terminal distinta
+         ```bash
+         make SSLClient.out 
+         ```
+         ```bash
+         ./SSLClient.out <hostname> <portnum> #Usar como hostname su IP, se usará el mismo puerto 1234 del servidor
+         ```
+
 sudo cp ci0123.pem /etc/ssl/certs/
 
 sudo cp ci0123.pem /etc/ssl/private/ci0123.key
