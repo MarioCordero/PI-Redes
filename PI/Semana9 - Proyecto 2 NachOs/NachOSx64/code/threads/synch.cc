@@ -104,14 +104,13 @@ Semaphore::V()
 //	This is used to destroy a user semaphore
 //----------------------------------------------------------------------
 
-void
-Semaphore::Destroy()
-{
+void Semaphore::Destroy() {
     Thread *thread;
     IntStatus oldLevel = interrupt->SetLevel(IntOff);
 
-    while ( (thread = queue->Remove() ) != NULL )	// make thread ready
-	scheduler->ReadyToRun(thread);
+    while ( (thread = queue->Remove() ) != NULL ) {
+        scheduler->ReadyToRun(thread);
+    }
 
     interrupt->SetLevel(oldLevel);
 }
@@ -123,12 +122,18 @@ Semaphore::Destroy()
 // Note -- without a correct implementation of Condition::Wait(), 
 // the test case in the network assignment won't work!
 Lock::Lock(const char* debugName) {
-
+    this->name = (char *) debugName;
+    this->free = true;
+    this->semaforo = new Semaphore( this->name , 1 );
 }
 
 
 Lock::~Lock() {
-
+    if(this->semaforo){
+        // this->semaforo->Destroy();
+        delete this->semaforo;
+    }
+    this->name = nullptr;
 }
 
 
@@ -143,11 +148,11 @@ void Lock::Acquire() {
 
 void Lock::Release() {
     if (this->mio != currentThread) { // Manejo de error: el hilo actual no posee el lock
+        this->free = true;
+        this->mio = NULL;
+        this->semaforo->V(); // Free the semaphore
         return;
     }
-    this->free = true;
-    this->mio = NULL;
-    this->semaforo->V(); // Free the semaphore
 }
 
 
@@ -157,59 +162,120 @@ bool Lock::isHeldByCurrentThread() {
 
 
 Condition::Condition(const char* debugName) {
-    Semaphore * semaphore = 0;
-    this->Wait(Lock * L);
-
+    this->queue = new List<Thread*>;
 }
 
 
 Condition::~Condition() {
-
+    if(this->queue)
+        delete this->queue;
 }
 
 
-void Condition::Wait( Lock * conditionLock ) {
+void Condition::Wait(Lock* conditionLock) {
+    IntStatus oldLevel = interrupt->SetLevel(IntOff); // Disable interrupts
+    conditionLock->Release();
+    this->queue->Append(currentThread); // Add thread to wait queue
+    currentThread->Sleep();       // Put thread to sleep
 
+    conditionLock->Acquire();      // Reacquire the lock when woken up
+    interrupt->SetLevel(oldLevel); // Restore interrupt state
 }
 
 
-void Condition::Signal( Lock * conditionLock ) {
-
-}
-
-
-void Condition::Broadcast( Lock * conditionLock ) {
-    while (conditionLock->GetSemaphore()->getValue() != 0) {
-        
+void Condition::Signal(Lock* conditionLock) {
+    IntStatus oldLevel = interrupt->SetLevel(IntOff); // Disable interrupts
+    if (!queue->IsEmpty()) {
+        Thread* thread = queue->Remove();  // Remove one waiting thread
+        scheduler->ReadyToRun(thread);     // Wake the thread
     }
+    interrupt->SetLevel(oldLevel); // Restore interrupt state
+}
+
+
+void Condition::Broadcast(Lock* conditionLock) {
+    IntStatus oldLevel = interrupt->SetLevel(IntOff); // Disable interrupts
+
+    while (!queue->IsEmpty()) {
+        Thread* thread = this->queue->Remove();  // Remove all waiting threads
+        scheduler->ReadyToRun(thread);     // Wake all threads
+    }
+
+    interrupt->SetLevel(oldLevel); // Restore interrupt state
 }
 
 
 // Mutex class
-Mutex::Mutex( const char * debugName ) {
-
+Mutex::Mutex(const char* debugName) {
+    name = (char*) debugName;
+    isLocked = false;               // Initially, the mutex is unlocked
+    owner = nullptr;                // No thread owns the mutex initially
+    waitingQueue = new List<Thread*>;  // Initialize the queue for waiting threads
 }
 
 Mutex::~Mutex() {
-
+    delete waitingQueue;            // Clean up the waiting queue
 }
 
 void Mutex::Lock() {
+    IntStatus oldLevel = interrupt->SetLevel(IntOff);  // Disable interrupts
 
+    if (isLocked) {                  // If the mutex is already locked
+        waitingQueue->Append(currentThread);  // Add current thread to the waiting queue
+        currentThread->Sleep();      // Put the current thread to sleep until it's woken up
+    } else {
+        isLocked = true;             // Lock the mutex
+        owner = currentThread;       // Set the current thread as the owner of the mutex
+    }
+
+    interrupt->SetLevel(oldLevel);   // Restore interrupts
 }
 
 void Mutex::Unlock() {
+    IntStatus oldLevel = interrupt->SetLevel(IntOff);  // Disable interrupts
 
+    if (owner != currentThread) {    // Error handling: only the owner can unlock the mutex
+        interrupt->SetLevel(oldLevel); // Restore interrupts before returning
+        return;
+    }
+
+    if (!waitingQueue->IsEmpty()) {                     // If there are threads waiting
+        Thread* nextThread = waitingQueue->Remove();    // Remove one waiting thread
+        scheduler->ReadyToRun(nextThread);              // Wake it up and make it ready to run
+    } else {
+        isLocked = false;            // Unlock the mutex
+        owner = nullptr;             // No thread owns the mutex anymore
+    }
+
+    interrupt->SetLevel(oldLevel);   // Restore interrupts
 }
 
 
 // Barrier class
-Barrier::Barrier( const char * debugName, int count ) {
+Barrier::Barrier(const char* debugName, int threadCount) {
+    name = (char*) debugName;                   // Set debugging name
+    count = threadCount;                        // Set the number of threads to wait for
+    waiting = 0;                                // Initially, no threads are waiting
+    barrierLock = new Lock(debugName);          // Initialize a lock for the barrier
+    barrierSemaphore = new Semaphore(debugName, 0);  // Semaphore initialized with 0
 }
 
 Barrier::~Barrier() {
+    delete barrierLock;
+    delete barrierSemaphore;
 }
 
 void Barrier::Wait() {
-}
+    barrierLock->Acquire();                      // Acquire the lock to update the waiting count
 
+    waiting++;                                   // Increment the number of waiting threads
+    if (waiting == count) {                      // If the required number of threads have arrived
+        for (int i = 0; i < count; i++) {        // Release all threads
+            barrierSemaphore->V();               // Signal the semaphore to wake waiting threads
+        }
+        waiting = 0;                             // Reset the count for reuse
+    }
+
+    barrierLock->Release();                      // Release the lock
+    barrierSemaphore->P();                       // Block the thread if not all have arrived
+}

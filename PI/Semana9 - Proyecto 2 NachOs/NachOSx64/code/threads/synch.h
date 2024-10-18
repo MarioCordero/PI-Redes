@@ -138,6 +138,7 @@ class Condition {
   private:
     char* name;
     // plus some other stuff you'll need to define
+    List<Thread*>* queue;              // List to hold waiting threads
 };
 
 
@@ -150,8 +151,10 @@ class Mutex {
       void Lock();
       void Unlock();
    private:
-      char * name;
-      // plus some other stuff you'll need to define
+      char* name;                    // Name for debugging purposes
+      bool isLocked;                 // To keep track if the mutex is currently locked
+      Thread* owner;                 // The thread that holds the mutex
+      List<Thread*>* waitingQueue;   // Queue for threads waiting to acquire the mutex
 };
 
 
@@ -163,8 +166,11 @@ class Barrier {
       ~Barrier();
       void Wait();
    private:
-      char * name;
-      // plus some other stuff you'll need to define
+      char* name;                                       // Debugging name
+      int count;                                        // Total number of threads to wait for
+      int waiting;                                      // Current number of threads waiting at the barrier
+      Lock* barrierLock;                                // Lock to ensure atomic updates to the counter
+      Semaphore* barrierSemaphore;                      // Semaphore to block and release threads
 };
 
 #endif // SYNCH_H
