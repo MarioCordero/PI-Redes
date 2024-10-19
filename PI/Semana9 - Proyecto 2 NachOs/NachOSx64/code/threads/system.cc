@@ -95,6 +95,7 @@ Initialize(int argc, char **argv)
     
 #ifdef USER_PROGRAM
     bool debugUserProg = false;	// single step user program
+    MiMapa = new BitMap(NUM_PAGES);  // Inicializa el mapa de bits con el número de páginas disponibles en memoria
 #endif
 #ifdef FILESYS_NEEDED
     bool format = false;	// format disk
