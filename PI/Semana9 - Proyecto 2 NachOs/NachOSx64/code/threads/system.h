@@ -34,7 +34,8 @@ extern Timer *timer;				// the hardware alarm clock
 
 #include "machine.h"
 extern Machine* machine;	// user program memory and registers
-#include "bitmap.h"  		// Bitmap incluido
+#include "../userprog/bitmap.h"  		// Bitmap incluido
+extern BitMap *MiMapa;  	// Declaración del mapa de bits global
 
 #endif
 //---------------------USER PART---------------------//

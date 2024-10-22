@@ -35,7 +35,7 @@ SynchDisk   *synchDisk;
 //---------------USER PART---------------//
 #ifdef USER_PROGRAM	// requires either FILESYS or FILESYS_STUB
 Machine *machine;	// user program memory and registers
-extern BitMap *MiMapa;  	// Declaración del mapa de bits global
+BitMap *MiMapa;  	// Declaración del mapa de bits global
 #endif
 //---------------USER PART---------------//
 
@@ -99,7 +99,8 @@ Initialize(int argc, char **argv)
 //-------------------USER PART-------------------//
 #ifdef USER_PROGRAM
     bool debugUserProg = false;	// single step user program
-    MiMapa = new BitMap(NUM_PAGES);  // Inicializa el mapa de bits con el número de páginas disponibles en memoria
+    MiMapa = new BitMap(NumPhysPages);  // Inicializa el mapa de bits con el número de páginas disponibles en memoria
+    //printf("El numero de paginas que se hizo en el mapa es: %d",NumPhysPages);
 #endif
 //-------------------USER PART-------------------//
 
@@ -110,7 +111,6 @@ Initialize(int argc, char **argv)
     double rely = 1;		// network reliability
     int netname = 0;		// UNIX socket name
 #endif
-    
     for (argc--, argv++; argc > 0; argc -= argCount, argv += argCount) {
 	argCount = 1;
 	if (!strcmp(*argv, "-d")) {
@@ -219,6 +219,7 @@ Cleanup()
     
 #ifdef USER_PROGRAM
     delete machine;
+    // delete MiMapa;
 #endif
 
 #ifdef FILESYS_NEEDED
