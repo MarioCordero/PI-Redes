@@ -32,9 +32,12 @@ FileSystem  *fileSystem;
 SynchDisk   *synchDisk;
 #endif
 
+//---------------USER PART---------------//
 #ifdef USER_PROGRAM	// requires either FILESYS or FILESYS_STUB
 Machine *machine;	// user program memory and registers
+extern BitMap *MiMapa;  	// Declaración del mapa de bits global
 #endif
+//---------------USER PART---------------//
 
 #ifdef NETWORK
 PostOffice *postOffice;
@@ -89,14 +92,17 @@ Initialize(int argc, char **argv)
     bool randomYield = false;
     
 
-// 2007, Jose Miguel Santos Espino
+    // 2007, Jose Miguel Santos Espino
     bool preemptiveScheduling = false;
     long long timeSlice;
-    
+
+//-------------------USER PART-------------------//
 #ifdef USER_PROGRAM
     bool debugUserProg = false;	// single step user program
     MiMapa = new BitMap(NUM_PAGES);  // Inicializa el mapa de bits con el número de páginas disponibles en memoria
 #endif
+//-------------------USER PART-------------------//
+
 #ifdef FILESYS_NEEDED
     bool format = false;	// format disk
 #endif
